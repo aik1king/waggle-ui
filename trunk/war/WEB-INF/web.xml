@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>tasteServlet</servlet-name>
+    <servlet-class>tw.kayjean.ui.server.TastingServiceImpl</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>coordinateServlet</servlet-name>
+    <servlet-class>tw.kayjean.ui.server.CoordinateServiceImpl</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>locationServlet</servlet-name>
+    <servlet-class>tw.kayjean.ui.server.LocationsServiceImpl</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>greetServlet</servlet-name>
+    <servlet-class>tw.kayjean.ui.server.GreetingServiceImpl</servlet-class>
+  </servlet>
+  
+
+  <servlet-mapping>
+    <servlet-name>tasteServlet</servlet-name>
+    <url-pattern>/waggle_ui/taste</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>coordinateServlet</servlet-name>
+    <url-pattern>/waggle_ui/coordinate</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>locationServlet</servlet-name>
+    <url-pattern>/waggle_ui/location</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>greetServlet</servlet-name>
+    <url-pattern>/waggle_ui/greet</url-pattern>
+  </servlet-mapping>
+
+
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Waggle_ui.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
