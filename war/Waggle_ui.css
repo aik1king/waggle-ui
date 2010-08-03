@@ -1,0 +1,306 @@
+/* CSS RESET */
+
+body{padding:0;margin:0;font:13px Arial,Helvetica,Garuda,sans-serif;}
+h1,h2,h3,h4,h5,h6,ul,li,em,strong,pre,code{padding:0;margin:0;line-height:1em;font-size:100%;font-style: normal;}
+table{font-size:inherit;}
+ul{list-style:none;}
+img{border:0;}
+p{margin:1em 0;}
+
+/* See all layout -- uncomment to see borders everywhere 
+div { border: 1px solid red; }
+table { border: 1px solid blue; } */
+
+/* Header */
+#header {
+	width: 100%;
+	height: 50px;
+	background: /*#11608A*/ #ffffff url(../images/header.png) no-repeat;
+	text-align: center;
+}
+#header a {
+	float: right;
+	margin: 10px 20px 0 0;
+	width: 60px;
+	padding: 5px;
+	display: block;
+	color: #A4AFBA;
+	font: 16px Tahoma, sans-serif;
+	font-weight: bolder;
+	cursor: pointer;	
+}
+#header a:hover {
+	background: #8EA3BA;
+	color: #020775;
+}
+
+#start {
+	font-family: Georgia, Helvetica, sans-serif;
+	font-size: 120%;
+	margin-left: 15px;
+}
+
+/* Sidebar */
+.sidebar {
+	float: left;
+	clear: left;
+	width: 300px;
+	margin: 10px 10px 0 10px;
+}
+
+/* Input Panel and Autocomplete */
+#inputPanel {
+	background: url(../images/watermark_add.png) no-repeat bottom right;
+	padding-bottom: 5px;
+}
+
+.gwt-SuggestBox {
+	width: 280px;
+	height: 20px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: larger;
+	padding: 4px;
+	border: 2px solid #ddd;
+	color: #BABABA;
+	background: #f9f9f9;
+} 
+.gwt-SuggestBoxPopup {
+	padding: 0px;
+	width: 280px;
+	border: 1px solid WindowFrame;
+	background-color: Window;
+	overflow: hidden;
+	position: relative;
+	z-index: 3;
+} 
+.gwt-SuggestBoxPopup .item {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: pointer;
+	display: block;
+	width: 280px;
+	font: menu;
+	font-size: 14px;
+	overflow: hidden;
+} 
+.gwt-SuggestBoxPopup .item-selected {
+	background-color: Highlight;
+	color: HighlightText;
+}
+
+/* Add greenness */
+.textbox_g {
+    border: 2px solid #aedf9a;
+	color: black;
+    background: none;
+}
+
+/* Message Panel */
+#messagePanel {
+	margin: 10px 0 0 0;
+	width: inherit;
+	padding: 3px 5px 3px 5px;
+	font-weight: bolder;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 110%;
+	background: url(../images/watermark_info.png) no-repeat bottom right;
+}
+
+/* Tab Panel */
+#tabPanel {	
+}
+.gwt-TabBar .gwt-TabBarFirst,.gwt-TabBarRest,.gwt-TabBarItem {
+	padding: 1px 1px 0 1px;
+	border-bottom: 1px solid #5a6782;
+}
+.gwt-TabBar .gwt-TabBarItem-selected {
+	padding: 0;
+	border: 1px solid #5a6782;
+	border-bottom: 1px solid #ffff99;
+	background-color: #ffff99;
+}
+.gwt-TabPanelBottom {
+	width: 300px;
+	/*height: 420px;*/
+	border-bottom: 1px solid #5a6782;
+}
+
+.one_tab {
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	background: center no-repeat;
+	/* For the tooltips to work */
+	position: relative;
+	z-index: 1;
+}
+.one_tab:hover { z-index: 2; }
+.one_tab span { display: none; }
+.one_tab:hover span {
+	display: block;
+	position: absolute;
+	top: -25px;
+    left: 10px;
+    border: 1px dotted #003399;
+    background-color: #FFF3C1;
+    color: #000;
+    padding: 4px;
+}
+#tab_info { background-image: url(../images/tab_info.png); }
+#tab_route { background-image: url(../images/tab_route.png); }
+#tab_options { background-image: url(../images/tab_options.png); }
+#tab_poi { background-image: url(../images/tab_poi.png); }
+#tab_mapmod { background-image: url(../images/tab_mod.png); }
+
+.tabTitle {
+	margin: 0px 0px 6px 0px;
+	padding: 4px 4px 4px 0px;
+	border: none;
+	background: #ffff99;
+	font-size: 14.0pt;
+	font-family: "Lucida Grande", Tahoma, sans-serif;
+	color: #17365D;
+	letter-spacing: .25pt;
+	display: block;
+	text-align: right;
+}
+
+#spinner {
+	width: 30px;
+	height: 30px;
+	margin: 0 0 5px 50px;
+	visibility: hidden;
+	cursor: default;
+}
+
+/* LocationPanel */
+.locationPanel {
+}
+.routeflow {
+}
+.routeandtrash {
+}
+.dragarea {
+	clear: right;
+}
+#clear_all {
+	float: right;
+	width: 40px;
+	height: 40px;
+	background: center no-repeat;
+	background-image: url(../images/button_clearall.png);
+	cursor: pointer;
+}
+
+.locationEntry {
+	width: 280px;
+	margin: 2px 2px 10px 10px;
+}
+.locationEntry .label {
+	width: 100%;
+	padding: 2px;
+	border: 1px #004B73 solid;
+	font-weight: bolder;
+}
+.locationEntry .label .text {
+	padding: 3px 0 3px 0;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+.locationEntry .label .buttons {
+	float: right;
+}
+
+.locationEntry .extras {
+	width: 100%;
+	padding: 3px 3px 0px 3px;
+	background: #FFEEBA;
+}
+.locationEntry .extras .base_row {
+	width: 100%;
+}
+.locationEntry .extras .base_row .togglelink {
+	font-family: Georgia, "Calisto MT", sans-serif;
+	font-size: smaller;
+	text-align: right;
+	cursor: pointer;
+}
+.locationEntry .extras .base_row .eye .gwt-Image {
+	width: 24px;
+	height: 14px;
+}
+.locationEntry .extras .stopovers {
+	margin: 3px 0 3px 3px;
+}
+
+.faded {
+	visibility: hidden;
+	background: #E7E7E7;
+	opacity:.50;
+	filter: alpha(opacity=50);
+}
+.faded .label {
+}
+.faded .extras {
+	background: none;
+}
+
+/** Drag 'n' drop styles **/
+.dragdrop-positioner {
+  border: 1px dashed #1E90FF; /* blue */
+  z-index: 1;
+  zoom: 1; /* IE gain hasLayout */
+  margin: 2px 2px 10px 10px;
+}
+
+/* Map */
+#mapPanel { margin-left: 320px; }
+.mapPanel {
+	margin-top: 10px;
+	border: 1px #000000 solid;
+}
+.attribute-editor {
+	background: #ffffff;
+}
+
+/* Reused Items */
+
+.gwt-Image {
+	padding: 1px 1px 1px 1px;
+	width: 24px;
+	height: 24px;
+}
+.gwt-Image:hover {
+	padding: 0px 0px 0px 0px;
+	border: 1px groove #004B73;
+	cursor: pointer;
+}
+
+.gwt-Button {
+	border: 3px double #999999;
+	border-top-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	background-color: #FFFFFF;
+	color: #333333;
+	font-weight: bold;
+	font-size: smaller;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+.gwt-Button:active {
+	border: 3px double #CCCCCC;
+	border-top-color: #999999;
+	border-left-color: #999999;
+}
+.gwt-DialogBox {
+	background: #ffffff;
+	border: 1px #004B73 double;
+	z-index: 2;
+}
+.gwt-DialogBox .Caption {
+	background: url(../images/gray_gradient.gif) repeat-x;
+}
+
+/** Needed for Google Maps API to work **/
+v\:* {
+behavior:url(#default#VML);
+}
