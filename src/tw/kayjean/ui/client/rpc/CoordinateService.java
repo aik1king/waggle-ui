@@ -8,4 +8,5 @@ import tw.kayjean.ui.server.graph.Node;
 @RemoteServiceRelativePath("coordinate")
 public interface CoordinateService extends RemoteService{
 	 public Node getNode(String s);
+	 public String getIPLocation( );
 }

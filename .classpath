@@ -7,5 +7,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="gwt-dnd-3.0.1.jar"/>
 	<classpathentry kind="lib" path="gwt-maps.jar"/>
+	<classpathentry kind="lib" path="commons-fileupload-1.2.jar"/>
+	<classpathentry kind="lib" path="commons-io-1.4.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

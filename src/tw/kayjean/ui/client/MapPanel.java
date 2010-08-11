@@ -75,6 +75,8 @@ import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.maps.client.geom.LatLngBounds;
 
+import tw.kayjean.ui.client.rpc.CoordinateIPLocation;
+
 public class MapPanel extends Composite {
 
 	private static final int DEFAULT_ZOOM = 7;
@@ -121,7 +123,7 @@ public class MapPanel extends Composite {
 		};
 		map.addMapMoveEndHandler(h);
 		
-		//delete Maps.coordService.getIPLocation(new CoordinateIPLocation());
+		Waggle_ui.coordService.getIPLocation(new CoordinateIPLocation());
 	}
 
 	public InfoWindow GetInfoWnd() {
@@ -212,7 +214,7 @@ public class MapPanel extends Composite {
 
 			public void onClick(MarkerClickEvent event) {
 				//InfoWindow info = map.getInfoWindow();
-				//info.open(event.getSender(), new InfoWindowContent("這裡是 <b>"+ n + "</b>"));
+				//info.open(event.getSender(), new InfoWindowContent("嚙緻嚙諒是 <b>"+ n + "</b>"));
 				
 				Label directions = new Label( n );
 			    directions.addClickListener(new ClickListener() {
