@@ -10,6 +10,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import tw.kayjean.ui.client.rpc.LocationsService;
 
+/**
+ * The server side implementation of the RPC service.
+ */
+@SuppressWarnings("serial")
 public class LocationsServiceImpl extends RemoteServiceServlet implements LocationsService {
 
 	public Map getLocations() {

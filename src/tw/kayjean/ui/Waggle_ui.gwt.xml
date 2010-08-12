@@ -16,7 +16,6 @@
 <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 
 	<!-- Lets us use Graph-related objects everywhere -->	
-	<inherits name='tw.kayjean.ui.server.graph'/>
 
 <script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x&amp;key=ABQIAAAAh7YfkaBHi2ZeQWYxA00oABRTPNWZRgpPHOkAwwy3RmzjjAauPRSQQtAt_3_ywQ7NUD6_Hnw2KgOmgw" />
 

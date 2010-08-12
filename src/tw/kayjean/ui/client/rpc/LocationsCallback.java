@@ -38,7 +38,10 @@ public class LocationsCallback implements AsyncCallback {
         // Pre-populate a route, if necessary.
         // Note that this is done here because it DEPENDS on the locations being populated already.
         // Yes, this makes this service a one-time thing.
-        WUF.locPanel.loadGETLocations();
+        
+        //加入先前CGI內容
+        //不過現在沒有CGI,絕對不要啟動這裡
+        //WUF.locPanel.loadGETLocations();
     }
 
 }

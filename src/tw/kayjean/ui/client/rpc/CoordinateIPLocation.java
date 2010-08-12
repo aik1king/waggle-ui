@@ -1,9 +1,9 @@
 package tw.kayjean.ui.client.rpc;
 
-import tw.kayjean.ui.client.WUF;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import tw.kayjean.ui.client.WUF;
 
 public class CoordinateIPLocation implements AsyncCallback {
 
@@ -14,16 +14,23 @@ public class CoordinateIPLocation implements AsyncCallback {
 	}
 
 	public void onSuccess(final Object result) {
-		String address = (String) result;
-		if (result == null) {
+		if (result == null ) {
 			return;
 		}
+		String address = (String) result;
+		if( address.equalsIgnoreCase("") )
+			return;
+		
 		WUF.mPanel.Clear();
 		//Hsinchu-24.8047-120.9714
 		String items[] = address.split("-");
+		try{
 		double y = Double.parseDouble(items[1]);
 		double x = Double.parseDouble(items[2]);
 		WUF.mPanel.Move( y, x , 10 );
+		}
+		catch( Exception e ){
+		}
 		return;
 	}
 
