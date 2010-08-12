@@ -1,19 +1,41 @@
 package tw.kayjean.ui.server;
 
 import java.util.StringTokenizer;
-
-import tw.kayjean.ui.client.rpc.CoordinateService;
-import tw.kayjean.ui.server.graph.Node;
-
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.StringTokenizer;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
+import tw.kayjean.ui.client.model.Node;
+import tw.kayjean.ui.client.rpc.CoordinateService;
+
+/**
+ * The server side implementation of the RPC service.
+ */
+@SuppressWarnings("serial")
 public class CoordinateServiceImpl extends RemoteServiceServlet implements CoordinateService {
+
+	public List getRTree(double w, double e, double s, double n) {
+		ArrayList avgNodes = new ArrayList();
+		
+		Node avgNode = new Node();
+		avgNode.name = "thisis1";
+		avgNode.y = 121.0;
+		avgNode.x = 24.5;
+		avgNodes.add(avgNode);
+
+		Node avgNode2 = new Node();
+		avgNode2.name = "thisis1";
+		avgNode2.y = 122.0;
+		avgNode2.x = 25.5;
+		avgNodes.add(avgNode2);
+
+		return avgNodes;
+	}
 
 	public Node getNode(String s){
 		return null;
@@ -41,7 +63,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	}
 	
 	public String getIPLocation() {
-		
+
+/*		
 		try{
 			String ip = getThreadLocalRequest().getRemoteHost();
 	//		ip = "218.160.227.220";
@@ -84,6 +107,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			//return "DEFAULT-24.5-121.0";
 			return "";
 		}
+*/
+		return "";
 	}
 	
 }

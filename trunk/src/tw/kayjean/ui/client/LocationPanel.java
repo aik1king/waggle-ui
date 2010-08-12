@@ -39,7 +39,7 @@ import tw.kayjean.ui.client.rpc.TastingCallback;
 
 public class LocationPanel extends Composite {
 
-	//先用route代替 已經瀏覽哪些地方
+	//嚙踝蕭嚙緝oute嚙瞇嚙踝蕭 嚙緩嚙篇嚙編嚙踝蕭嚙踝蕭レa嚙踝蕭
     protected RouteFlow routeFlow = new RouteFlow(); // Holds LocationEntrys
     private VerticalPanel routeTab = new VerticalPanel(); // Holds frame of routeFlow
 
@@ -81,8 +81,8 @@ public class LocationPanel extends Composite {
 
     /**
      * Runs JSNI call to pull the GET header, and populates a route.
-     * 從URL CGI裡面拿出可能要加入項目
      */
+/*    
     public void loadGETLocations() {
         String getlocs = parseGET("loc");
         if (getlocs == null || getlocs.equals("")) { return; }
@@ -113,7 +113,7 @@ public class LocationPanel extends Composite {
             openRouteBar();
             WUF.selectRouteTab();
             
-//以前是進行ROUTE計算,所以會有這個需要
+//嚙瘡嚙箴嚙瞌嚙箠嚙踝蕭ROUTE嚙緘嚙踝蕭,嚙課以嚙罵嚙踝蕭嚙緻嚙諉需要
             if (routeFlow.dragElements.getWidgetCount() == 1) {
                 signalMaptoDrawCoordinate(routeFlow.getLocString(0));
             }
@@ -123,7 +123,8 @@ public class LocationPanel extends Composite {
             
         }
     }
-
+*/
+    
     // Overloaded: default is that the location is input using the textbox
     public void addLocation(final String loc) {
         addLocation(loc, true);
@@ -134,6 +135,13 @@ public class LocationPanel extends Composite {
      * auto-routing.
      * @param loc String of the location to be entered. Will be checked!
      */
+    public void addLocation(final String loc, double x , double y ) {
+        // We assume that we're really going to add a location now
+        LocationEntry newloc = new LocationEntry(loc);
+
+        routeFlow.add(newloc); // Add to display
+        WUF.mPanel.AddOverlay(y, x, loc , 0 );
+    }
     public void addLocation(final String loc, boolean byTextBox) {
         if (byTextBox) {
             if (loc.equals("") || !WUF.inPanel.isValidLocation(loc)) {
@@ -157,6 +165,7 @@ public class LocationPanel extends Composite {
         // Scriptaculous!
 //delete        Effects.Effect("Pulsate",newloc);
 
+        
         if (routeFlow.size() == 1) {
             // First location? Put a marker and pan to it.
             signalMaptoDrawCoordinate(loc);
@@ -166,6 +175,8 @@ public class LocationPanel extends Composite {
         else { // location.size() should be greater than one by now 
             signalMaptoDrawRoute();
         }
+
+        
         WUF.selectRouteTab();
     }
 
@@ -234,7 +245,7 @@ public class LocationPanel extends Composite {
         WUF.clearMap();
 //delete        toggleSOCheckBoxes(false);	// disable checkboxes until the callback completes
 
-        Waggle_ui.coordService.getNode(locName, new CoordinateCallback());
+//        Waggle_ui.coordService.getNode(locName, new CoordinateCallback());
     }
 
     /**
@@ -260,9 +271,9 @@ public class LocationPanel extends Composite {
         markNameMap.clear();
 
         // Send all our locations over to the RoutingService!
-        Waggle_ui.tastingService.getTaste(
-                routeFlow.generateLocStringList(),
-                new TastingCallback());
+//        Waggle_ui.tastingService.getTaste(
+//                routeFlow.generateLocStringList(),
+//                new TastingCallback());
     }
 
     public void addToOverlayMap(Integer index, Overlay olay) {
@@ -284,7 +295,7 @@ public class LocationPanel extends Composite {
      * this route from.
      */
 /*    
- * 只顯示各個路徑中某一個段落
+ * 嚙線嚙踝蕭雃U嚙諉賂蕭嚙罵嚙踝蕭嚙磐嚙瑾嚙諉段嚙踝蕭
     private void onlyShowRoute(int index) {
         // UI on the Map
         WUF.clearMap();

@@ -10,12 +10,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface LocationsService extends RemoteService {
     
     /**
-     * ¨ú±o¥ş³¡¸ê®Æ
+     * ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * We need this here for GWT to optimize. Don't change this unless the
      * parameters or return value changes!
      * 
      * @gwt.typeArgs <java.lang.String,edu.berkeley.cs169.server.graph.Node>
      */
+	
+	//æŸå€‹æ–‡å­—ä¸Ÿé€²å»,è·‘å‡ºé©åˆçš„çµæœ,æŸ¥è©¢çµæœ
     public Map getLocations();
     public List getLocations(String prefix, int limit);
 }

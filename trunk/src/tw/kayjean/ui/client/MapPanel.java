@@ -76,6 +76,7 @@ import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.maps.client.geom.LatLngBounds;
 
 import tw.kayjean.ui.client.rpc.CoordinateIPLocation;
+import tw.kayjean.ui.client.rpc.CoordinateRTreeCallback;
 
 public class MapPanel extends Composite {
 
@@ -114,7 +115,14 @@ public class MapPanel extends Composite {
 								.getLongitude();
 						double s = map.getBounds().getSouthWest().getLatitude();
 						double n = map.getBounds().getNorthEast().getLatitude();
-						//delete Maps.coordService.getRTree(w, ee, s, n,	new CoordinateRTreeCallback());
+						//地圖視窗移動,引發尋找相對應資料
+						//相對應資料取得後,逐筆加入BOX中
+						//並且將TAG加入地圖上
+						//先採用這種比較簡單的運作方式
+						//未來再採用gae比較複雜運作方式
+						//目前android範例程式和gae比較相似,用相同表現方式
+						//順序則是放在這個之後再研究
+						Waggle_ui.coordService.getRTree(w, ee, s, n, new CoordinateRTreeCallback());
 					} else
 						moveflag = true;
 				}
@@ -123,6 +131,7 @@ public class MapPanel extends Composite {
 		};
 		map.addMapMoveEndHandler(h);
 		
+		//建置時,引發使用者地圖視窗移動
 		Waggle_ui.coordService.getIPLocation(new CoordinateIPLocation());
 	}
 

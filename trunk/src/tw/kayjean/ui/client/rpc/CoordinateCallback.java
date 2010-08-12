@@ -4,7 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tw.kayjean.ui.client.WUF;
-import tw.kayjean.ui.server.graph.Node;
+import tw.kayjean.ui.client.model.Node;
 
 public class CoordinateCallback implements AsyncCallback{
 //delete	private GMarkerEventManager markerEventMan;
@@ -18,6 +18,7 @@ public class CoordinateCallback implements AsyncCallback{
 	
 	public void onSuccess(final Object result) {
         
+		//加入地圖上
 /*		
         // Clear the map from indexes to GOverlayCollections, because we're going to fill them again!
         WUF.locPanel.clearOverlayMap();

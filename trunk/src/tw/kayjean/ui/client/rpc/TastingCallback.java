@@ -7,7 +7,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tw.kayjean.ui.client.WUF;
-import tw.kayjean.ui.server.graph.Node;
+import tw.kayjean.ui.client.model.Node;
 
 public class TastingCallback implements AsyncCallback {
 

@@ -42,7 +42,7 @@ public class InputPanel extends Composite {
         AutocompleteHelper acHelp = new AutocompleteHelper();
 
         // Make an AJAX call to populate the autocompleteS
-        //³o¬O³Ì­«­nªº¦a¤è,±Ò°Êµ{¦¡¹B§@,±N¸ê®Æ°e¤J¨t²Î
+        //é€™æ˜¯ç¬¬ä¸€ç¨®è³‡æ–™é€²å…¥æ–¹æ³•
         Waggle_ui.locsService.getLocations(new LocationsCallback());
 
         // Add listeners
@@ -75,7 +75,7 @@ public class InputPanel extends Composite {
      * @param ls Lower case string
      * @return String if matched, null if not
      */
-/*¨S¦³¨Ï¥Î¨ì    
+/*ï¿½Sï¿½ï¿½ï¿½Ï¥Î¨ï¿½    
     public String lowercaseMatch(String ls) {
         Iterator i = cLocations.iterator();
         while (i.hasNext()) {
