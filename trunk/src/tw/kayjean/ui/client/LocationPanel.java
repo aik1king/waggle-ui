@@ -135,12 +135,29 @@ public class LocationPanel extends Composite {
      * auto-routing.
      * @param loc String of the location to be entered. Will be checked!
      */
+    public void checkpointinbox(){
+    	//table中每一個點都送入map中,檢查是否符合範圍
+        LocationEntry tmpEntry;
+        for (int i = routeFlow.size() - 1 ; i >= 0 ; i--) {
+            tmpEntry = routeFlow.getEntry(i);
+            if( !WUF.mPanel.pointinbox(tmpEntry.x, tmpEntry.y) ){
+            	routeFlow.remove(tmpEntry);
+            }
+        }
+    	return;
+    }
+    
     public void addLocation(final String loc, double x , double y ) {
-        // We assume that we're really going to add a location now
-        LocationEntry newloc = new LocationEntry(loc);
-
-        routeFlow.add(newloc); // Add to display
-        WUF.mPanel.AddOverlay(y, x, loc , 0 );
+    	
+    	//先進行確認,是否存在,不存在才要繼續
+    	if( routeFlow.checkexist( loc ) == false ){
+            // We assume that we're really going to add a location now
+            LocationEntry newloc = new LocationEntry(loc , x , y );
+            routeFlow.add(newloc); // Add to display
+            //加入地圖的點
+            WUF.mPanel.AddOverlay(y, x, loc , 0 );
+            openRouteBar();
+    	}
     }
     public void addLocation(final String loc, boolean byTextBox) {
         if (byTextBox) {
@@ -407,6 +424,8 @@ public class LocationPanel extends Composite {
         private ToggleButton bShowOnly = new ToggleButton(new Image("images/button_eye.gif"),this);
         private Label loctext;
         protected String name;
+        protected double x;
+        protected double y;
 
         // Stopover options for *after* this Location
     //delete    private StopoversSet stopovers = new StopoversSet();
@@ -421,6 +440,21 @@ public class LocationPanel extends Composite {
 
         private int myIndex;
 
+        public LocationEntry(final String inName , double inx , double iny ) {
+            name = inName;
+            x = inx;
+            y = iny;
+            VerticalPanel contents = new VerticalPanel();
+
+            contents.add(buildLabel());
+            contents.add(buildExtras());
+            stopoversPanel.setVisible(false);
+            hideExtras();
+
+            initWidget(contents);
+            this.setStyleName("locationEntry");
+        }
+        
         public LocationEntry(final String inName) {
             name = inName;
             VerticalPanel contents = new VerticalPanel();
@@ -649,6 +683,7 @@ public class LocationPanel extends Composite {
         protected void add (LocationEntry le) {
             widgetDragController.makeDraggable(le);
             dragElements.add(le);
+            //準備使用這個,加在正確位置 dragElements.insert(w, beforeIndex)
         }
 
         /**
@@ -694,7 +729,20 @@ public class LocationPanel extends Composite {
         private LocationEntry getEntry(int index) {
             return ((LocationEntry) dragElements.getWidget(index));
         }
-
+        
+        protected boolean checkexist( String cname ) {
+            for (int i = 0; i < this.size(); i++) {
+                String name = this.getLocString(i);
+                //rank之下的就不需要重新計算了
+            	//因為每一個一定是依照重要性排序的
+            	//所以只要比對到目前排序最後一個就可以了
+                int rank = 3;
+                if( cname.equalsIgnoreCase(name) )
+                	return true;
+            }
+            return false;
+        }
+        
         /**
          * Generates an entire List object of Location Strings.
          * For use when calling the RoutingService.
