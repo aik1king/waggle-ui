@@ -87,6 +87,11 @@ public class MapPanel extends Composite {
 	private Icon baseIcon;
 	private boolean moveflag = true;
 
+	public boolean pointinbox( double y , double x ){
+		LatLng coordinate = LatLng.newInstance(y,x);
+		return map.getBounds().containsLatLng(coordinate);
+	}
+	
 	public MapPanel() {
 
 		map = new MapWidget(DEFAULT_CENTER, DEFAULT_ZOOM);
@@ -107,14 +112,14 @@ public class MapPanel extends Composite {
 		final MapMoveEndHandler h = new MapMoveEndHandler() {
 
 			public void onMoveEnd(MapMoveEndEvent e) {
-				if (map.getZoomLevel() > 12) {
+				//if (map.getZoomLevel() > 12) {
 					if (moveflag == true) {
 						double w = map.getBounds().getSouthWest()
-								.getLongitude();
+								.getLongitude(); //西南經度
 						double ee = map.getBounds().getNorthEast()
-								.getLongitude();
-						double s = map.getBounds().getSouthWest().getLatitude();
-						double n = map.getBounds().getNorthEast().getLatitude();
+								.getLongitude(); //東北經度
+						double s = map.getBounds().getSouthWest().getLatitude(); //西南緯度
+						double n = map.getBounds().getNorthEast().getLatitude(); //東北緯度
 						//地圖視窗移動,引發尋找相對應資料
 						//相對應資料取得後,逐筆加入BOX中
 						//並且將TAG加入地圖上
@@ -122,10 +127,27 @@ public class MapPanel extends Composite {
 						//未來再採用gae比較複雜運作方式
 						//目前android範例程式和gae比較相似,用相同表現方式
 						//順序則是放在這個之後再研究
+						
+						//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
+						WUF.locPanel.checkpointinbox();
+						//移除完畢之後,再抓取新內容
 						Waggle_ui.coordService.getRTree(w, ee, s, n, new CoordinateRTreeCallback());
+						
+						/*
+						List<String> r = null;
+						Geocell eee = new Geocell();
+						r = eee.best_bbox_search_cells(n, ee , s, w);
+						for (int i = 0; i < r.size(); i++) {
+							//先從cache取得是否有內容,如果有就直接使用cache內容
+							//如果沒有就啟動搜尋機制
+						}
+						*/
+						
+						
+
 					} else
 						moveflag = true;
-				}
+				//}
 				// textBox.setText(textBox.getText() + "onMove()");
 			}
 		};
@@ -195,6 +217,8 @@ public class MapPanel extends Composite {
 	public void AddOverlay(double y, double x, String name, int type) {
 		// map
 		try {
+			//lat 緯度 
+			//lon 經度
 			LatLng point = LatLng.newInstance(y, x);
 			map.addOverlay(createMarker(point, name, type));
 		} catch (Exception e) {

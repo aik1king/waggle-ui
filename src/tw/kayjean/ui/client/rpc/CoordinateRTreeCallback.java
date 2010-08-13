@@ -30,7 +30,7 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 
 	public void onSuccess(final Object result) {
 
-		WUF.mPanel.Clear();
+//		WUF.mPanel.Clear();
 
 		List avgNodes = (List) result;
 		if (result == null) {
@@ -47,8 +47,16 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 
 		for (Iterator locIter = avgNodes.iterator(); locIter.hasNext();) {
 			Node avgNode = (Node) locIter.next();
-
-			WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x );
+			
+			if( WUF.mPanel.pointinbox(avgNode.x, avgNode.y) == true ){
+				//如果節點屬於目前視窗範圍,才要加入,不然不需要加入
+				
+				//加入時候,自然會依照數值進行排序,分數高的放上面
+				WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x );
+				//在這裡面,如果已經在TABLE裡面也不需要加入
+				
+			}
+			
 /*			
 			//圖層上畫出每一個節點
 			WUF.mPanel.AddOverlay(avgNode.y, avgNode.x, avgNode.name , 0 );
