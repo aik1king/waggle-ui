@@ -19,7 +19,7 @@ import tw.kayjean.ui.client.rpc.CoordinateService;
 @SuppressWarnings("serial")
 public class CoordinateServiceImpl extends RemoteServiceServlet implements CoordinateService {
 
-	public List getRTree(double w, double e, double s, double n) {
+	public List getRTree( String name ) {
 		ArrayList avgNodes = new ArrayList();
 		
 		Node avgNode = new Node();

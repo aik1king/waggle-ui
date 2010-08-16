@@ -39,7 +39,6 @@ import tw.kayjean.ui.client.rpc.TastingCallback;
 
 public class LocationPanel extends Composite {
 
-	//���route�N�� �w�g�s����Ǧa��
     protected RouteFlow routeFlow = new RouteFlow(); // Holds LocationEntrys
     private VerticalPanel routeTab = new VerticalPanel(); // Holds frame of routeFlow
 
@@ -140,8 +139,9 @@ public class LocationPanel extends Composite {
         LocationEntry tmpEntry;
         for (int i = routeFlow.size() - 1 ; i >= 0 ; i--) {
             tmpEntry = routeFlow.getEntry(i);
-            if( !WUF.mPanel.pointinbox(tmpEntry.x, tmpEntry.y) ){
+            if( !WUF.mPanel.pointinbox(tmpEntry.y, tmpEntry.x) ){
             	routeFlow.remove(tmpEntry);
+            	WUF.mPanel.RemoveOverlay( tmpEntry.name );
             }
         }
     	return;
@@ -333,14 +333,16 @@ public class LocationPanel extends Composite {
     /**
      * Clears the map, then draws each LocationEntrys route again.
      */
+    
     private void showAllAgain() {
-        WUF.clearMap();
-        for (int i = 0; i < routeFlow.size(); i++) {
-            WUF.mPanel.AddOverlay(   ((GOverlayCollection)overlaysMap).get(new Integer(i))  );
-        }
+//        WUF.clearMap();
+//        for (int i = 0; i < routeFlow.size(); i++) {
+//            WUF.mPanel.AddOverlay(   ((GOverlayCollection)overlaysMap).get(new Integer(i))  );
+//        }
         routeFlow.ensureLocUIConsistency();
     }
 
+    
     /**
      * Enables all stopover checkboxes in the entire routeFlow if the boolean argument is true, 
      * and disables them if the argument is false. 
@@ -449,7 +451,7 @@ public class LocationPanel extends Composite {
             contents.add(buildLabel());
             contents.add(buildExtras());
             stopoversPanel.setVisible(false);
-            hideExtras();
+            //hideExtras();
 
             initWidget(contents);
             this.setStyleName("locationEntry");
@@ -462,7 +464,7 @@ public class LocationPanel extends Composite {
             contents.add(buildLabel());
             contents.add(buildExtras());
             stopoversPanel.setVisible(false);
-            hideExtras();
+            //hideExtras();
 
             initWidget(contents);
             this.setStyleName("locationEntry");
@@ -559,6 +561,8 @@ public class LocationPanel extends Composite {
          * Expands the extras panel
          */
         private void toggleExtras() {
+        	//顯示完整HTML
+        	//重覆點選,可以造成打開,關閉效果
             stopoversPanel.setVisible(!stopoversPanel.isVisible());
         }
 
@@ -789,10 +793,10 @@ public class LocationPanel extends Composite {
                 this.getEntry(i).exts.setStyleName("extras");
 
                 // Ensure stopovers trigger consistency
-                this.getEntry(i).showExtras();
-                if (i == this.size()-1) {
-                    this.getEntry(i).hideExtras();
-                }
+//                this.getEntry(i).showExtras();
+//                if (i == this.size()-1) {
+//                    this.getEntry(i).hideExtras();
+//                }
 
             }
 //delete    Effects.Effect("Highlight",dragElements);

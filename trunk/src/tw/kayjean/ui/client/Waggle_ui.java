@@ -40,8 +40,8 @@ public class Waggle_ui implements EntryPoint {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT
-			.create(GreetingService.class);
+//	private final GreetingServiceAsync greetingService = GWT
+//			.create(GreetingService.class);
 
 	/**
 	 * This is the entry point method.
@@ -175,4 +175,4 @@ public class Waggle_ui implements EntryPoint {
 	}
 }
 
-//¨Ï¥ÎªÌ IP COOKIE ¥h¹Lªº¦a¤èLIST(¦WºÙ,RANKING)    «ØÄ³ªº¦a¤èLIST(¦WºÙ,RANKING)   ³Q©Úµ´ªº¦a¤èLIST
+//ï¿½Ï¥Îªï¿½ IP COOKIE ï¿½hï¿½Lï¿½ï¿½ï¿½aï¿½ï¿½LIST(ï¿½Wï¿½ï¿½,RANKING)    ï¿½ï¿½Ä³ï¿½ï¿½ï¿½aï¿½ï¿½LIST(ï¿½Wï¿½ï¿½,RANKING)   ï¿½Qï¿½Úµï¿½ï¿½ï¿½ï¿½aï¿½ï¿½LIST

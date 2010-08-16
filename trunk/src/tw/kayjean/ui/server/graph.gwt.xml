@@ -1,4 +1,0 @@
-<module>
-	<!-- Pulls in the source code for all the Graph-related objects -->
-	<source path='graph'/>
-</module>
