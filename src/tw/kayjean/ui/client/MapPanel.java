@@ -87,6 +87,8 @@ public class MapPanel extends Composite {
 	private Icon baseIcon;
 	private boolean moveflag = true;
 
+	private Map< String , Overlay > _overlays = new HashMap< String , Overlay >();
+	
 	public boolean pointinbox( double y , double x ){
 		LatLng coordinate = LatLng.newInstance(y,x);
 		return map.getBounds().containsLatLng(coordinate);
@@ -109,7 +111,7 @@ public class MapPanel extends Composite {
 		baseIcon.setIconAnchor(Point.newInstance(9, 34));
 		baseIcon.setInfoWindowAnchor(Point.newInstance(9, 2));
 
-		final MapMoveEndHandler h = new MapMoveEndHandler() {
+		MapMoveEndHandler h = new MapMoveEndHandler() {
 
 			public void onMoveEnd(MapMoveEndEvent e) {
 				//if (map.getZoomLevel() > 12) {
@@ -130,20 +132,19 @@ public class MapPanel extends Composite {
 						
 						//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
 						WUF.locPanel.checkpointinbox();
-						//移除完畢之後,再抓取新內容
-						Waggle_ui.coordService.getRTree(w, ee, s, n, new CoordinateRTreeCallback());
 						
-						/*
+						//抓取新內容
+						//Waggle_ui.coordService.getRTree(w, ee, s, n, new CoordinateRTreeCallback());
+						//如果放進入cache,要怎麼維護cache機制呢
+						//也就是說,資料太多需要清除時,要怎麼清除呢
+						//到時候再說了
+
 						List<String> r = null;
 						Geocell eee = new Geocell();
 						r = eee.best_bbox_search_cells(n, ee , s, w);
 						for (int i = 0; i < r.size(); i++) {
-							//先從cache取得是否有內容,如果有就直接使用cache內容
-							//如果沒有就啟動搜尋機制
+							DataSwitch.get().getRTree( r.get(i) , new CoordinateRTreeCallback());
 						}
-						*/
-						
-						
 
 					} else
 						moveflag = true;
@@ -205,7 +206,7 @@ public class MapPanel extends Composite {
 //		map.setSize(width + "px", height + "px");
 	}
 
-
+/*
 	public void AddOverlay( Overlay overlay ) {
 		// map
 		try {
@@ -213,6 +214,7 @@ public class MapPanel extends Composite {
 		} catch (Exception e) {
 		}
 	}
+*/
 	
 	public void AddOverlay(double y, double x, String name, int type) {
 		// map
@@ -220,11 +222,28 @@ public class MapPanel extends Composite {
 			//lat 緯度 
 			//lon 經度
 			LatLng point = LatLng.newInstance(y, x);
-			map.addOverlay(createMarker(point, name, type));
+			Marker m = createMarker(point, name, type);
+			_overlays.put( name , m );
+			map.addOverlay( m );
 		} catch (Exception e) {
 		}
 	}
 
+	public void RemoveOverlay(String name) {
+		// map
+		try {
+			//lat 緯度 
+			//lon 經度
+			Overlay m = _overlays.get( name );
+			if( m != null ){
+				map.removeOverlay( m );
+				_overlays.remove(m);
+			}
+		} catch (Exception e) {
+		}
+	}
+	
+	
 	private Marker createMarker(LatLng point, String number, int type) {
 		final String n = number;
 		Icon icon = Icon.newInstance(baseIcon);
