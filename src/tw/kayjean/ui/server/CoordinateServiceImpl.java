@@ -1,17 +1,27 @@
 package tw.kayjean.ui.server;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 
+import javax.servlet.ServletException;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import com.xerox.amazonws.sdb.Domain;
+import com.xerox.amazonws.sdb.Item;
+import com.xerox.amazonws.sdb.ItemAttribute;
+import com.xerox.amazonws.sdb.QueryWithAttributesResult;
+import com.xerox.amazonws.sdb.SimpleDB;
+
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateService;
+
 
 /**
  * The server side implementation of the RPC service.
@@ -19,9 +29,102 @@ import tw.kayjean.ui.client.rpc.CoordinateService;
 @SuppressWarnings("serial")
 public class CoordinateServiceImpl extends RemoteServiceServlet implements CoordinateService {
 
+    public void init() throws ServletException {
+        super.init();
+        preparedb( "poi" );
+    }
+	
+	//db相關, POI DB
+	public SimpleDB sds = null;
+	public Domain dom = null;
+	public boolean preparedb( String dbname ) {
+		if (sds == null) {
+			try {
+				//http://code.google.com/p/typica/wiki/TypicaSampleCode
+                //sds = SamplesUtils.loadASWDB(); 
+                sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);
+                sds.setSignatureVersion(1);
+                
+                /*
+                ListDomainsResult result = sds.listDomains(); 
+                List<Domain> domains = result.getDomainList(); 
+                for (Domain d : domains) { 
+                        System.out.println(d.getName()); 
+                } 
+                */
+
+                dom = sds.getDomain(dbname);
+                if (dom == null) {
+                	//根本不會跑到這裡
+                    System.out.println("domain must be set! we create this time");
+                    sds.createDomain(dbname);
+                    return false;
+                }
+			}
+			catch( Exception e ){
+				System.out.println( e.toString() );
+			}
+		}
+		return true;
+	}
+
 	public List getRTree( String name ) {
 		ArrayList avgNodes = new ArrayList();
+
+		Node avgNode = new Node();
+		avgNode.name = "thisis1";
+		avgNode.y = 121.0;
+		avgNode.x = 24.5;
+		avgNodes.add(avgNode);
 		
+		//依照名稱到 s3中尋找需要檔案
+		//如果有就將資料填入,並且返回
+		//如果沒有就送入message queue
+		//或是直接到db中查詢,查詢結果製作成檔案並且回傳
+		
+		//先直接查詢db
+
+		if( dom == null ){
+			System.out.println( "error" );
+		}
+		else{
+		String qattr = "l" + Integer.toString(name.length());
+
+		String line = "select * from poi where " + qattr + " = \"" + name + "\" and rank is not null order by rank desc limit 10";
+        int itemCount = 0;
+        long start = System.currentTimeMillis(); 
+        String nextToken = null;
+        try{
+            do {
+                QueryWithAttributesResult qwar = dom.selectItems(line, nextToken);
+                Map<String, List<ItemAttribute>> items = qwar.getItems();
+                for (String id : items.keySet()) { 
+                	System.out.println("Item : "+id);
+
+            		Node avgNode2 = new Node();
+            		avgNode2.name = id;
+                    for (ItemAttribute attr : items.get(id)) {
+                        //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
+                    	if( attr.getName().equalsIgnoreCase("lon") )
+                    		avgNode2.y = Double.parseDouble(attr.getValue());
+                    	else if( attr.getName().equalsIgnoreCase("lat") )
+                    		avgNode2.x = Double.parseDouble(attr.getValue());
+                    } 
+            		avgNodes.add(avgNode2);
+                } 
+                nextToken = qwar.getNextToken(); 
+                System.out.println("Box Usage :"+qwar.getBoxUsage()); 
+            } while (nextToken != null && !nextToken.trim().equals("") ); 
+        }
+        catch(Exception e){
+        	System.out.println( e);
+        }
+        long end = System.currentTimeMillis(); 
+        System.out.println("Time : "+((int)(end-start)/1000.0)); 
+        System.out.println("Number of items returned : "+itemCount); 
+		}
+
+/*        
 		Node avgNode = new Node();
 		avgNode.name = "thisis1";
 		avgNode.y = 121.0;
@@ -33,7 +136,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		avgNode2.y = 122.0;
 		avgNode2.x = 25.5;
 		avgNodes.add(avgNode2);
-
+*/
 		return avgNodes;
 	}
 

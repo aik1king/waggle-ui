@@ -2,46 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="test-classes" path="test"/>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/shared/geronimo-el_1.0_spec-1.0.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/shared/geronimo-jsp_2.1_spec-1.0.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/shared/geronimo-servlet_2.5_spec-1.2.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/user/jsr107cache-1.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/lib/user/orm/jdo2-api-2.3-eb.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/s/eclipse/plugins/com.google.appengine.eclipse.sdkbundle.1.3.5_1.3.5.v201006301254/appengine-java-sdk-1.3.5/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/GWT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="gwt-dnd-3.0.1.jar"/>
 	<classpathentry kind="lib" path="gwt-maps.jar"/>
 	<classpathentry kind="lib" path="commons-fileupload-1.2.jar"/>
 	<classpathentry kind="lib" path="commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="jets3t-0.7.3.jar"/>
+	<classpathentry kind="lib" path="typica.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
