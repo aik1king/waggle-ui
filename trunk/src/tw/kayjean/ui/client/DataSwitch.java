@@ -60,7 +60,38 @@ public class DataSwitch implements CoordinateServiceAsync {
 		
 	}
 	
-	public void getRTree ( String name , final AsyncCallback cb){
+	public void sendNode( String username , int type , String name , double x , double y , String geocell , final AsyncCallback cb ){
+
+		Waggle_ui.coordService.sendNode( username , type , name , x , y , geocell , new AsyncCallback<Integer>() {
+            public void onFailure(Throwable caught) {
+              cb.onFailure(caught);
+            }
+
+            public void onSuccess(Integer result) {
+              cb.onSuccess(result);
+            }
+      }
+		);
+		
+	}
+
+
+	public void getLocations( String prefix, int limit , final AsyncCallback cb ){
+		
+		Waggle_ui.coordService.getLocations( prefix , limit , new AsyncCallback<List>() {
+            public void onFailure(Throwable caught) {
+              cb.onFailure(caught);
+            }
+
+            public void onSuccess(List result) {
+              cb.onSuccess(result);
+            }
+      }
+		);
+		
+	}
+	
+	public void getRTree ( String username , String name , final AsyncCallback cb){
 
 		final String QueryKey = name;
         List cachResult = (List) cache.get(QueryKey);
@@ -68,7 +99,7 @@ public class DataSwitch implements CoordinateServiceAsync {
             cb.onSuccess(cachResult);
             return;
         }
-		Waggle_ui.coordService.getRTree(name , new AsyncCallback<List>() {
+		Waggle_ui.coordService.getRTree( username , name , new AsyncCallback<List>() {
             public void onFailure(Throwable caught) {
               cb.onFailure(caught);
             }

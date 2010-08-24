@@ -17,7 +17,6 @@ import com.google.gwt.maps.client.geom.LatLng;
 
 
 import tw.kayjean.ui.client.WUF;
-import tw.kayjean.ui.client.LocationPanel.LocationEntry;
 import tw.kayjean.ui.client.model.Node;
 
 public class CoordinateRTreeCallback implements AsyncCallback{
@@ -52,9 +51,10 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 				//如果節點屬於目前視窗範圍,才要加入,不然不需要加入
 				
 				//加入時候,自然會依照數值進行排序,分數高的放上面
-				WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x );
-				//在這裡面,如果已經在TABLE裡面也不需要加入
-				
+				if( avgNode.type == 0 )
+					WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
+				else if( avgNode.type == 1 )
+					WUF.favPanel.addFavorite(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
 			}
 			
 /*			

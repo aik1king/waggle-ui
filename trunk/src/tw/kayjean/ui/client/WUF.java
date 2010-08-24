@@ -32,6 +32,8 @@ public class WUF extends DockPanel implements WindowResizeListener {
 
 	public static final TabPanel tPanel = new TabPanel();
 	public static final LocationPanel locPanel = new LocationPanel();
+	public static final FavoritePanel favPanel = new FavoritePanel();
+	
 	//delete public static final OptionsPanel oPanel = new OptionsPanel();
 	private static final SimplePanel flashPanel = new SimplePanel();
 	//delete public static final POIPanel poiPanel = new POIPanel();
@@ -77,9 +79,10 @@ public class WUF extends DockPanel implements WindowResizeListener {
         RootPanel.get("messagePanel").add(messagePanel);
 
         // Building the TabPanel
-        tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See Your Route</span></div>", true); // List of locations to plot, and a plot button
+        tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See POIs in Map</span></div>", true); // List of locations to plot, and a plot button
+        tPanel.add(favPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See Your Favorite</span></div>", true);
 //delete        tPanel.add(oPanel, "<div id=\"tab_options\" class=\"one_tab\"><span>Set Advanced Options</span></div>", true);
-        tPanel.add(flashPanel, "<div id=\"tab_info\" class=\"one_tab\"><span>Show Pic and Information</span></div>", true);
+//        tPanel.add(flashPanel, "<div id=\"tab_info\" class=\"one_tab\"><span>Show Pic and Information</span></div>", true);
 //delete        tPanel.add(poiPanel, "<div id=\"tab_poi\" class=\"one_tab\"><span>Points of Interest</span></div>", true);
 //delete        tPanel.add(mModPanel, "<div id=\"tab_mapmod\" class=\"one_tab\"><span>Map Modification</span></div>", true);
         tPanel.add(new HTML(),"<img id=\"spinner\" src=\"images/spinner.gif\" alt=\"Please wait...\"/>", true);
@@ -93,7 +96,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 //delete        FlashObject.createMap();
 
         // Official welcome message.
-        //­nª½±µ¿ï©w¤@­Ó¦ì¸mÅã¥Ü±ÀÂË
+        //ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½@ï¿½Ó¦ï¿½mï¿½ï¿½Ü±ï¿½ï¿½ï¿½
 //delete        setSWF("Intro");
         message("To get started, begin typing the name of a location in the box to the left.");
     }
@@ -101,7 +104,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	/**
 	 * Selects the photo & details tab
 	 */
-    //¥Ñ2§ï¬°1
+    //ï¿½ï¿½2ï¿½ï¬°1
 	public static void selectInfoTab() { tPanel.selectTab(1); }
 
 	/**
@@ -196,6 +199,15 @@ public class WUF extends DockPanel implements WindowResizeListener {
     $wnd.print();
 }-*/;
 
+    public static void removeLocation( int type , final LocationEntry loc ){
+    	// type == 0 , move to Favorite
+    	if( type == 0 ){
+    		favPanel.addFavorite( loc.name , loc.x, loc.y , loc.geocell );
+    		locPanel.removeLocation( loc );
+    	}
+    }
+    
+    
 	/**
 	 * Click Listener for email functionality
 	 */

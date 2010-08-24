@@ -25,5 +25,10 @@ public class LocationsServiceImpl extends RemoteServiceServlet implements Locati
         locStringsCoords.put("ccccc", "33333");
 		return locStringsCoords; 
 	}
-	public List getLocations(String prefix, int limit){ return null;}
+	public List getLocations(String prefix, int limit)
+	{
+		//輸入文字,查詢合適內容
+		//目前用simpledb,還不需要放入s3
+		return null;
+	}
 }

@@ -10,7 +10,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface LocationsService extends RemoteService {
     
     /**
-     * ��o�������
      * We need this here for GWT to optimize. Don't change this unless the
      * parameters or return value changes!
      * 
