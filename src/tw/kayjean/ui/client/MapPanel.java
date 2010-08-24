@@ -143,7 +143,7 @@ public class MapPanel extends Composite {
 						Geocell eee = new Geocell();
 						r = eee.best_bbox_search_cells(n, ee , s, w);
 						for (int i = 0; i < r.size(); i++) {
-							DataSwitch.get().getRTree( r.get(i) , new CoordinateRTreeCallback());
+							DataSwitch.get().getRTree( "kayjean" , r.get(i) , new CoordinateRTreeCallback());
 						}
 
 					} else
