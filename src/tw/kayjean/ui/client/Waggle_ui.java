@@ -1,6 +1,5 @@
 package tw.kayjean.ui.client;
 
-import tw.kayjean.ui.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,6 +15,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.History;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Window;
 
 import tw.kayjean.ui.client.rpc.LocationsService;
 import tw.kayjean.ui.client.rpc.LocationsServiceAsync;
@@ -24,10 +28,22 @@ import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
 import tw.kayjean.ui.client.rpc.TastingService;
 import tw.kayjean.ui.client.rpc.TastingServiceAsync;
 
+import tw.kayjean.ui.sdk.FBCore;
+import tw.kayjean.ui.sdk.FBEvent;
+import tw.kayjean.ui.sdk.FBXfbml;
+import tw.kayjean.ui.client.examples.Example;
+import tw.kayjean.ui.client.examples.FriendsExample;
+import tw.kayjean.ui.client.examples.StreamPublishExample;
+
+import tw.kayjean.ui.shared.FieldVerifier;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
+//所謂的ValueChangeHandler 其實是指網站URL改變  http://gwttutorials.com/tag/valuechangehandler/
+//其實不太需要使用
+//public class Waggle_ui implements EntryPoint, ValueChangeHandler<String> {
 public class Waggle_ui implements EntryPoint {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -37,6 +53,24 @@ public class Waggle_ui implements EntryPoint {
 			+ "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
 
+
+	//進入系統後,選擇應用程式設定
+	//選擇authorized
+	//選擇developer (前面動作好像是多餘的)
+	//進入applications
+	//選擇register(里面文字有點多,要找一下)
+	//這時候應該會看到原本AP了 albumupload
+	public String APPID = "b2bbee7655d167948c9d84160210240b";
+			 //原本"1d81c942b38e2e6b3fc35a147d371ab3";
+	
+	public static FBCore fbCore = GWT.create(FBCore.class);
+	private FBEvent fbEvent = GWT.create(FBEvent.class);
+	private FBXfbml fbXfbml = GWT.create(FBXfbml.class);
+	
+	private boolean status = true;
+	private boolean xfbml = true;
+	private boolean cookie = true;
+	
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
@@ -160,11 +194,50 @@ public class Waggle_ui implements EntryPoint {
 	public static TastingServiceAsync tastingService;
 	
 	public void onModuleLoad() {
+		
+//		History.addValueChangeHandler ( this );
+		fbCore.init(APPID, status, cookie, xfbml);
+		
+		
 		setupRPC();						// Set up the RPC services
 		(new WUF()).initialize();		// Build the UI
 		RootPanel.get("start").setVisible(false); // Get rid of the Please Wait
 //delete		WUF.mPanel.jsniResize();		// Ensure map is the right size
 //delete		WUF.mPanel.recenter();			// Dramatic entrance
+		
+		
+		//第一組
+		//只要按下登入或是登出,都是來這邊檢查
+		//
+		// Callback used when session status is changed
+		//
+		class SessionChangeCallback extends Callback<JavaScriptObject> {
+			public void onSuccess ( JavaScriptObject response ) {
+			    // Make sure cookie is set so we can use the non async method
+			    renderHomeView ();
+			}
+		}
+		//
+		// Get notified when user session is changed
+		//
+		SessionChangeCallback sessionChangeCallback = new SessionChangeCallback ();
+		fbEvent.subscribe("auth.sessionChange",sessionChangeCallback);
+
+		
+		
+		//第二組
+		//一開始程式進入,就是來這裡檢查有沒有登入
+		// Callback used when checking login status
+		class LoginStatusCallback extends Callback<JavaScriptObject> {
+			public void onSuccess ( JavaScriptObject response ) {
+				renderApp( Window.Location.getHash() );
+			}
+		}
+		LoginStatusCallback loginStatusCallback = new LoginStatusCallback ();
+		// Get login status
+		fbCore.getLoginStatus( loginStatusCallback );
+		
+		
 	}
 	
 	private void setupRPC() {
@@ -173,6 +246,58 @@ public class Waggle_ui implements EntryPoint {
 		coordService = (CoordinateServiceAsync) GWT.create(CoordinateService.class);
 		tastingService = (TastingServiceAsync) GWT.create(TastingService.class);
 	}
+
+	//第一組
+	/**
+	 * Render GUI when logged in
+	 */
+	private void renderWhenLoggedIn () {
+		WUF.test2( new UserInfoViewController ( fbCore ) );
+		fbXfbml.parse();
+	}
+	
+	/**
+	 * Render GUI when not logged in
+	 */
+	private void renderWhenNotLoggedIn () {
+		WUF.test2( new FrontpageViewController () );
+		fbXfbml.parse();
+	}
+
+	/**
+	 * Render home view. If user is logged in display welcome message, otherwise
+	 * display login dialog.
+	 */
+	private void renderHomeView () {
+//	    sideBarView.clear();
+	    
+        if ( fbCore.getSession() == null ) {
+            renderWhenNotLoggedIn ();
+        } else {
+//            sideBarView.setWidget( new HomeSideBarPanel () );
+            renderWhenLoggedIn();
+        }
+	}
+	
+	
+	//第二組
+	/**
+	 * Render GUI
+	 */
+	private void renderApp ( String token ) {
+        renderHomeView ();
+	}
+
+	//facebook http://code.google.com/p/restfb/
+	//http://restfb.com/
+	//
+	
+/*	
+	//系統基礎
+    public void onValueChange(ValueChangeEvent<String> event) {
+        renderApp ( event.getValue() );
+    }
+*/
+	
 }
 
-//�ϥΪ� IP COOKIE �h�L���a��LIST(�W��,RANKING)    ��ĳ���a��LIST(�W��,RANKING)   �Q�ڵ����a��LIST
