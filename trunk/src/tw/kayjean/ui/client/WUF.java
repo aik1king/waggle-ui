@@ -14,7 +14,22 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Composite;
+
+import tw.kayjean.ui.client.examples.Example;
+import tw.kayjean.ui.client.examples.FriendsExample;
+import tw.kayjean.ui.client.examples.StreamPublishExample;
+
 
 /**
  * The WaggleUIFrame which holds all our Panels (and thus, virtually
@@ -99,6 +114,11 @@ public class WUF extends DockPanel implements WindowResizeListener {
         //�n������w�@�Ӧ�m��ܱ���
 //delete        setSWF("Intro");
         message("To get started, begin typing the name of a location in the box to the left.");
+
+
+//因為沒有辦法在一開始就知道有沒有登入,所以這邊要先關閉
+//登入狀況等到main後段,執行差不多時再檢查登入情形
+        //RootPanel.get("fb-root").add( new FrontpageViewController () );
     }
 
 	/**
@@ -251,4 +271,46 @@ public class WUF extends DockPanel implements WindowResizeListener {
         }
   }-*/;
 
+    
+    
+    //使用者不一定要使用fb-root這個區塊啦
+    //只是在html部分名子不能改變
+    
+    
+    //測試內容
+
+    public static void test2( Composite example ){
+    	RootPanel mainView = RootPanel.get("login");
+    	mainView.clear();
+    	mainView.add( example );
+    	
+    	
+
+        Example e = null;
+//        if ( "stream.publish".equals ( example ) ) {
+//            e = new StreamPublishExample ( Waggle_ui.fbCore );
+//        } else if ( "friends".equals ( example ) ) {
+            e = new FriendsExample ( Waggle_ui.fbCore );
+//        }
+    	
+        VerticalPanel examplePanel = new VerticalPanel ();
+        examplePanel.setWidth ( "700px" );
+        examplePanel.getElement().setId("ExampleView");
+        HorizontalPanel headerPanel = new HorizontalPanel ();
+        headerPanel.addStyleName( "header" );
+        headerPanel.add ( new HTML ( "Method: " + e.getMethod() ) );
+        Anchor sourceLink = new Anchor ( "Source" );
+        sourceLink.addStyleName("sourceLink");
+        sourceLink.setTarget( "blank");
+        sourceLink.setHref("http://code.google.com/p/gwtfb/source/browse/trunk/GwtFB/src/com/gwtfb/client/examples/" + e.getSimpleName() + ".java" );
+         headerPanel.add ( sourceLink ); 
+        examplePanel.add( headerPanel );
+        examplePanel.addStyleName ( "example" );
+        e.addStyleName( "example" );
+        examplePanel.add ( e );
+        // Add example
+        mainView.add( examplePanel );
+    	
+    }
+   
 }
