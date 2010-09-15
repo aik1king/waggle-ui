@@ -133,17 +133,15 @@ public class MapPanel extends Composite {
 						//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
 						WUF.locPanel.checkpointinbox();
 						
-						//抓取新內容
-						//Waggle_ui.coordService.getRTree(w, ee, s, n, new CoordinateRTreeCallback());
-						//如果放進入cache,要怎麼維護cache機制呢
-						//也就是說,資料太多需要清除時,要怎麼清除呢
-						//到時候再說了
+						//先塞入原本cache項目
+						DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
 
 						List<String> r = null;
 						Geocell eee = new Geocell();
 						r = eee.best_bbox_search_cells(n, ee , s, w);
 						for (int i = 0; i < r.size(); i++) {
-							DataSwitch.get().getRTree( "kayjean" , r.get(i) , new CoordinateRTreeCallback());
+							//每一個方格進行處理
+							DataSwitch.get().getRTree( WUF.username() , r.get(i) , new CoordinateRTreeCallback());
 						}
 
 					} else

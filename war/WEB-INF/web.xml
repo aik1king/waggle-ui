@@ -37,4 +37,9 @@
     <welcome-file>Waggle_ui.html</welcome-file>
   </welcome-file-list>
 
+
+<listener>
+        <listener-class>tw.kayjean.ui.server.StatisticsContextListener</listener-class>
+</listener>
+
 </web-app>
