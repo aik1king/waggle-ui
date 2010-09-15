@@ -27,7 +27,7 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 		//        doThisBeforeReturn(true);
 	}
 
-	public void onSuccess(final Object result) {
+	public void onSuccess(final Object result ) {
 
 //		WUF.mPanel.Clear();
 
@@ -50,7 +50,7 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 			if( WUF.mPanel.pointinbox(avgNode.x, avgNode.y) == true ){
 				//如果節點屬於目前視窗範圍,才要加入,不然不需要加入
 				
-				//加入時候,自然會依照數值進行排序,分數高的放上面
+				//加入時候,應該依照數值進行排序,分數高的放上面
 				if( avgNode.type == 0 )
 					WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
 				else if( avgNode.type == 1 )

@@ -1,7 +1,9 @@
 package tw.kayjean.ui.client;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
@@ -26,6 +28,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Composite;
 
+
+import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.examples.Example;
 import tw.kayjean.ui.client.examples.FriendsExample;
 import tw.kayjean.ui.client.examples.StreamPublishExample;
@@ -40,6 +44,7 @@ import tw.kayjean.ui.client.examples.StreamPublishExample;
  */
 public class WUF extends DockPanel implements WindowResizeListener {
 
+	
 	// The various Panels you see in CalMap, and the only things accessible statically
 	public static final InputPanel inPanel = new InputPanel("Type a location here");
 	// Private elements used for notification purposes
@@ -55,6 +60,9 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	//delete protected static final MapModPanel mModPanel = new MapModPanel();
 
 	public static final MapPanel mPanel = new MapPanel();
+	
+	
+	private static final Label userName = new Label( "guest" );
 	
 	/**
 	 * Set to true whenever we are about to make a Coordinate, Routing, or POI Service call.
@@ -92,6 +100,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
         RootPanel.get("inputPanel").add(inPanel);
         // Build the messagePanel
         RootPanel.get("messagePanel").add(messagePanel);
+        RootPanel.get("usernamePanel").add(userName);
 
         // Building the TabPanel
         tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See POIs in Map</span></div>", true); // List of locations to plot, and a plot button
@@ -118,7 +127,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 
 //因為沒有辦法在一開始就知道有沒有登入,所以這邊要先關閉
 //登入狀況等到main後段,執行差不多時再檢查登入情形
-        //RootPanel.get("fb-root").add( new FrontpageViewController () );
+        RootPanel.get("fb-root").add( new FrontpageViewController () );
     }
 
 	/**
@@ -160,6 +169,14 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	public static void message(String s) {
         messagePanel.setText(s);
 		//Effects.Effect("Highlight", messagePanel);
+	}
+
+	public static String username() {
+		return userName.getText();
+	}
+
+	public static void setusername( String s ) {
+		userName.setText(s);
 	}
 
 	/** Start and stop the waiting bar... **/
@@ -222,6 +239,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
     public static void removeLocation( int type , final LocationEntry loc ){
     	// type == 0 , move to Favorite
     	if( type == 0 ){
+    		//加入cache中
     		favPanel.addFavorite( loc.name , loc.x, loc.y , loc.geocell );
     		locPanel.removeLocation( loc );
     	}

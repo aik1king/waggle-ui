@@ -91,7 +91,7 @@ public class FavoritePanel extends Composite {
             //可是queue要如何解決大家塞在一起,製作很多次的問題呢?
             //可是又不可能每一次移動就重新計算一次,那是不可能的
             //算了,先寫入小檔案好了
-            Waggle_ui.coordService.sendNode( "kayjean", 1 , loc , x , y , geocell , new CoordinateSendCallback() );
+            Waggle_ui.coordService.sendNode( WUF.username() , 1 , loc , x , y , geocell , new CoordinateSendCallback() );
     	}
     }
     public void addFavorite(final String loc, boolean byTextBox) {

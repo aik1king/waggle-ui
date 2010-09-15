@@ -95,6 +95,7 @@ public class UserInfoViewController extends Composite {
 	 */
 	private void renderMe ( JavaScriptObject response ) {
 		JSOModel jso = response.cast();
+		WUF.setusername(jso.get ( "name" ));
 		welcomeHtml.setHTML ( "<h3> Hi,  " + jso.get ( "name" ) + "</h3>Simple GWT Facebook Graph Client. "  );
 		
 		HTML json = new HTML ( new JSONObject ( response ).toString() );

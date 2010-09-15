@@ -4,6 +4,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import tw.kayjean.ui.client.Callback;
 
+
 /**
  * Class that wraps Facebook Event Handling methods
  * @see http://developers.facebook.com/docs/reference/javascript/#event-handling
@@ -36,3 +37,4 @@ public class FBEvent {
         callback.onSuccess ( obj );
     }
 }
+

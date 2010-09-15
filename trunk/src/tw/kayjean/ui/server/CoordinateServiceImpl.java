@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Vector;
 import java.util.TimeZone;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,7 +37,6 @@ import com.thoughtworks.xstream.XStream;
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateService;
 
-
 /**
  * The server side implementation of the RPC service.
  */
@@ -55,6 +55,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	S3Service s3Service = null;
 	S3Bucket testBucket1 = null;
 	S3Bucket testBucket2 = null;
+	
+	MemCache mcache = new MemCache();
 	
 	public boolean preparedb( String dbname ) {
 		if (sds == null) {
@@ -100,10 +102,16 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		return true;
 	}
 
+	//可以開始選擇項目
+	//感受系統問題
+	//主要目的是
+	//1.找出並且列出所有地方
+	//2.使用者可以用不同ranking紀錄曾經去過的項目
+	//3.推薦可以去的地方(包括顯示詳細資料)
 	public List getRTree( String username , String name ) {
 		ArrayList avgNodes = new ArrayList();
 		XStream xstream = new XStream();
-		//讀取一班資料
+		//讀取一般資料
 		boolean awsexist = false;
 		S3Object objectComplete2 = null;
         try {
@@ -172,7 +180,6 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	        System.out.println("Time : "+((int)(end-start)/1000.0)); 
 	        System.out.println("Number of items returned : "+itemCount); 
 			}
-	
 			
 			try{
 				//將東西變成一個XML
@@ -198,22 +205,33 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
         
 		//讀取client相關資料
         if( username != null && !username.equalsIgnoreCase("" ) ){
-        try {
-        	objectComplete2 = s3Service.getObject(testBucket2, username );
-        	awsexist = true;
-        } catch ( Exception e) {
-        }
-        if( awsexist == false ){
-        	//如果沒有內容,完全不需要處理
-        }
-        else
-        {
-        	//讀取先前內容
-        	try{
-        		//應該是讀取後,依照name過濾後才加入
-        		//目前先用最笨方法
-        		List<Node> l = null;
-        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
+        	
+        	List<Node> l =mcache.getcache(username); 
+        	if( l == null ){
+        		//讀取檔案,存入cache
+    	        try {
+    	        	objectComplete2 = s3Service.getObject(testBucket2, username );
+    	        	awsexist = true;
+    	        } catch ( Exception e) {
+    	        }
+    	        if( awsexist == false ){
+    	        	//如果沒有內容,完全不需要處理
+    	        }
+    	        else
+    	        {
+    	        	//讀取先前內容
+    	        	try{
+    	        		//應該是讀取後,依照name過濾後才加入
+    	        		//目前先用最笨方法
+    	        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
+    	        		mcache.addcache(username , l);
+    				}
+    				catch(Exception e ){
+    					System.out.println( e );
+    				}
+    	        }
+        	}
+        	if( l != null ){
         		for( int i = 0 ; i < l.size() ; i++ ){
         			Node n = l.get(i);
         			double t = n.x;
@@ -234,10 +252,6 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
         			}
         		}
 			}
-			catch(Exception e ){
-				System.out.println( e );
-			}
-        }
         }
 		return avgNodes;
 	}
@@ -325,7 +339,18 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		n.geocell = geocell;
 		
 		if( type == 1 ){
-			//寫入興趣點
+			//寫入興趣點透過memorycache
+        	List<Node> l =mcache.getcache(username); 
+        	if( l == null ){
+				ArrayList avgNodes = new ArrayList();
+				avgNodes.add(n);
+        		mcache.addcache(username, avgNodes );
+        	}
+        	else{
+        		mcache.addcacheitem(username , n);
+        	}
+
+			//寫入興趣點透過檔案
 			XStream xstream = new XStream();
 			boolean awsexist = false;
 			S3Object objectComplete2 = null;
