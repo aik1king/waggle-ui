@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class LocationEntry extends Composite implements ClickListener,HasDragHandle {
 
     private PushButton bDelete = new PushButton(new Image("images/button_remove.png"),this);
+    private PushButton bError = new PushButton(new Image("images/button_error.png"),this);
     private PushButton bDetails = new PushButton(new Image("images/button_details.png"),this);
     private ToggleButton bShowOnly = new ToggleButton(new Image("images/button_eye.gif"),this);
     private Label loctext;
@@ -86,12 +87,14 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
         
         HorizontalPanel buttons = new HorizontalPanel();
         buttons.add(bDetails);
+        buttons.add(bError);
         buttons.add(bDelete);
 
         p.add(loctext);
         p.add(buttons);
 
-        bDelete.setTitle("Click to delete \"" + name + "\"");
+        bDelete.setTitle("Click to favorite \"" + name + "\"");
+        bError.setTitle("Click to error report \"" + name + "\"");
         bDetails.setTitle("Click to show details about \"" + name + "\"");
 
         //p.setCellVerticalAlignment(loctext, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -234,7 +237,10 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
         	//先不管LOCAL的INDEX之類機制
         	//不過檔案最好可以
         	
-        	WUF.removeLocation( myType , this );
+        	WUF.favoriteLocation( myType , this );
+        }
+        else if (sender == bError) {
+        	WUF.errorLocation( myType , this );
         }
         else if (sender == bDetails) {
             WUF.setSWF(this.name);

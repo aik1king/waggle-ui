@@ -60,8 +60,12 @@ public class Waggle_ui implements EntryPoint {
 	//進入applications
 	//選擇register(里面文字有點多,要找一下)
 	//這時候應該會看到原本AP了 albumupload
+	
+	//kayjean
 	public String APPID = "b2bbee7655d167948c9d84160210240b";
-			 //原本"1d81c942b38e2e6b3fc35a147d371ab3";
+	
+	//demo
+	//public String APPID = "1d81c942b38e2e6b3fc35a147d371ab3"; 
 	
 	public static FBCore fbCore = GWT.create(FBCore.class);
 	private FBEvent fbEvent = GWT.create(FBEvent.class);

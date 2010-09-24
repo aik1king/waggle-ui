@@ -44,8 +44,12 @@ import tw.kayjean.ui.client.rpc.CoordinateService;
 public class CoordinateServiceImpl extends RemoteServiceServlet implements CoordinateService {
 
     public void init() throws ServletException {
+    	System.out.println("CoordinateServiceImpl init");
+    	
         super.init();
         preparedb( "poi" );
+        
+        System.out.println("CoordinateServiceImpl end");
     }
 	
 	//db相關, POI DB
@@ -55,8 +59,9 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	S3Service s3Service = null;
 	S3Bucket testBucket1 = null;
 	S3Bucket testBucket2 = null;
+	S3Bucket testBucket3 = null;
 	
-	MemCache mcache = new MemCache();
+//	MemCache mcache = new MemCache();
 	
 	public boolean preparedb( String dbname ) {
 		if (sds == null) {
@@ -87,12 +92,16 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			}
 		}
 
-		if( testBucket1 == null || testBucket2 == null ){
+		if( testBucket1 == null || testBucket2 == null || testBucket3 == null ){
 			try {
 				AWSCredentials awsCredentials = new AWSCredentials("" , "");
 				s3Service = new RestS3Service(awsCredentials);
+				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
+				//儲存暫時性個人資料..這個方法怪怪的,不過暫時有效
 				testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
+				//儲存長期間個人資料.
+				testBucket3 = s3Service.getOrCreateBucket("xmluserdata-kayjean");
 			}
 			catch( Exception e ){
 				System.out.println( e.toString() );
@@ -109,6 +118,9 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	//2.使用者可以用不同ranking紀錄曾經去過的項目
 	//3.推薦可以去的地方(包括顯示詳細資料)
 	public List getRTree( String username , String name ) {
+		
+		System.out.println("CoordinateServiceImpl getRTree");
+		
 		ArrayList avgNodes = new ArrayList();
 		XStream xstream = new XStream();
 		//讀取一般資料
@@ -206,31 +218,47 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		//讀取client相關資料
         if( username != null && !username.equalsIgnoreCase("" ) ){
         	
-        	List<Node> l =mcache.getcache(username); 
+        	List<Node> l =MemCache.getcache(username); 
         	if( l == null ){
-        		//讀取檔案,存入cache
+        		//讀取暫時區域檔案,存入cache
+        		awsexist = false;
     	        try {
     	        	objectComplete2 = s3Service.getObject(testBucket2, username );
     	        	awsexist = true;
     	        } catch ( Exception e) {
     	        }
-    	        if( awsexist == false ){
-    	        	//如果沒有內容,完全不需要處理
-    	        }
-    	        else
+    	        if( awsexist == true )
     	        {
-    	        	//讀取先前內容
     	        	try{
-    	        		//應該是讀取後,依照name過濾後才加入
-    	        		//目前先用最笨方法
     	        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
-    	        		mcache.addcache(username , l);
+    	        		MemCache.addcache(username , l);
+    				}
+    				catch(Exception e ){
+    					System.out.println( e );
+    				}
+    	        }
+    	        
+        		//讀取長期區域檔案,存入cache
+        		awsexist = false;
+    	        try {
+    	        	objectComplete2 = s3Service.getObject(testBucket3, username );
+    	        	awsexist = true;
+    	        } catch ( Exception e) {
+    	        }
+    	        if( awsexist == true )
+    	        {
+    	        	try{
+    	        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
+    	        		MemCache.addcache(username , l);
     				}
     				catch(Exception e ){
     					System.out.println( e );
     				}
     	        }
         	}
+        	
+        	l =MemCache.getcache(username);
+        	
         	if( l != null ){
         		for( int i = 0 ; i < l.size() ; i++ ){
         			Node n = l.get(i);
@@ -338,16 +366,16 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		n.y = y;
 		n.geocell = geocell;
 		
-		if( type == 1 ){
+		if( type == 1 || type == 2 ){
 			//寫入興趣點透過memorycache
-        	List<Node> l =mcache.getcache(username); 
+        	List<Node> l =MemCache.getcache(username); 
         	if( l == null ){
 				ArrayList avgNodes = new ArrayList();
 				avgNodes.add(n);
-        		mcache.addcache(username, avgNodes );
+				MemCache.addcache(username, avgNodes );
         	}
         	else{
-        		mcache.addcacheitem(username , n);
+        		MemCache.addcacheitem(username , n);
         	}
 
 			//寫入興趣點透過檔案

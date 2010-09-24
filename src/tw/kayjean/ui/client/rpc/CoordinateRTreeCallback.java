@@ -55,6 +55,8 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 					WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
 				else if( avgNode.type == 1 )
 					WUF.favPanel.addFavorite(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
+				else if( avgNode.type == 2 )
+					WUF.errPanel.addError(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
 			}
 			
 /*			

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import tw.kayjean.ui.client.rpc.CoordinateSendCallback;
 
-public class FavoritePanel extends Composite {
+public class ErrorPanel extends Composite {
 
     protected RouteFlow routeFlow = new RouteFlow(); // Holds LocationEntrys
     private VerticalPanel routeTab = new VerticalPanel(); // Holds frame of routeFlow
@@ -33,13 +33,13 @@ public class FavoritePanel extends Composite {
      */
     private Map overlaysMap = new HashMap();
 
-    public FavoritePanel() {
+    public ErrorPanel() {
         title.setStyleName("tabTitle");
         routeTab.add(title);
         routeTab.add(routeFlow);
 
         initWidget(routeTab);
-        this.setStyleName("favoritePanel");
+        this.setStyleName("errorPanel");
 
         routeFlow.setVisible(false);
     }
@@ -52,8 +52,8 @@ public class FavoritePanel extends Composite {
     }
 
     // Overloaded: default is that the location is input using the textbox
-    public void addFavorite(final String loc) {
-        addFavorite(loc, true);
+    public void addError(final String loc) {
+        addError(loc, true);
     }
 
     /**
@@ -74,21 +74,21 @@ public class FavoritePanel extends Composite {
     	return;
     }
     
-    public void addFavorite(final String loc, double x , double y , String geocell ) {
+    public void addError(final String loc, double x , double y , String geocell ) {
     	
     	//先進行確認,是否存在,不存在才要繼續
     	if( routeFlow.checkexist( loc ) == false ){
             // We assume that we're really going to add a location now
-    		// 0 means location , 1 means favorite
-            LocationEntry newloc = new LocationEntry(loc , x , y , 1 , geocell  );
+    		// 0 means location , 1 means favorite , 2 means error
+            LocationEntry newloc = new LocationEntry(loc , x , y , 2 , geocell  );
             routeFlow.add(newloc); // Add to display
             //加入地圖的點
-            if( WUF.currentselect == 1 )
-            	WUF.mPanel.AddOverlay(y, x, loc , 1 );
+            if( WUF.currentselect == 2 )
+            	WUF.mPanel.AddOverlay(y, x, loc , 2 );
             openRouteBar();
     	}
     }
-    public void addFavorite(final String loc, boolean byTextBox) {
+    public void addError(final String loc, boolean byTextBox) {
         if (byTextBox) {
             if (loc.equals("") || !WUF.inPanel.isValidLocation(loc)) {
             	WUF.message("You did not type a valid location. Try pressing Enter or Tab before finishing, to autocomplete!");

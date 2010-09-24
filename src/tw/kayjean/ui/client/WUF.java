@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Composite;
 
 
 import tw.kayjean.ui.client.model.Node;
+import tw.kayjean.ui.client.rpc.CoordinateSendCallback;
 import tw.kayjean.ui.client.examples.Example;
 import tw.kayjean.ui.client.examples.FriendsExample;
 import tw.kayjean.ui.client.examples.StreamPublishExample;
@@ -53,6 +54,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	public static final TabPanel tPanel = new TabPanel();
 	public static final LocationPanel locPanel = new LocationPanel();
 	public static final FavoritePanel favPanel = new FavoritePanel();
+	public static final ErrorPanel errPanel = new ErrorPanel();
 	
 	//delete public static final OptionsPanel oPanel = new OptionsPanel();
 	private static final SimplePanel flashPanel = new SimplePanel();
@@ -72,6 +74,8 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	 * This boolean was previously located in MapPanel.
 	 */
     public static boolean isMakingServerCall = false;
+    
+    public static int currentselect = 0;
 
 	/**
 	 * Constructor for this DockPanel. Only used from CalMap.java
@@ -105,6 +109,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
         // Building the TabPanel
         tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See POIs in Map</span></div>", true); // List of locations to plot, and a plot button
         tPanel.add(favPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See Your Favorite</span></div>", true);
+        tPanel.add(errPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>Error Report</span></div>", true);
 //delete        tPanel.add(oPanel, "<div id=\"tab_options\" class=\"one_tab\"><span>Set Advanced Options</span></div>", true);
 //        tPanel.add(flashPanel, "<div id=\"tab_info\" class=\"one_tab\"><span>Show Pic and Information</span></div>", true);
 //delete        tPanel.add(poiPanel, "<div id=\"tab_poi\" class=\"one_tab\"><span>Points of Interest</span></div>", true);
@@ -127,7 +132,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 
 //因為沒有辦法在一開始就知道有沒有登入,所以這邊要先關閉
 //登入狀況等到main後段,執行差不多時再檢查登入情形
-        RootPanel.get("fb-root").add( new FrontpageViewController () );
+//        RootPanel.get("fb-root").add( new FrontpageViewController () );
     }
 
 	/**
@@ -172,7 +177,8 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	}
 
 	public static String username() {
-		return userName.getText();
+		return "Kay Jean";
+//		return userName.getText();
 	}
 
 	public static void setusername( String s ) {
@@ -206,6 +212,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	/**
 	 * TabListener that invalidates clicks on the farthest right tab (spinner).
 	 */
+/*	
 	private class TabClickListener implements TabListener {
 
 		public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -217,6 +224,23 @@ public class WUF extends DockPanel implements WindowResizeListener {
 		public void onTabSelected(SourcesTabEvents sender, int tabIndex) {}
 
 	}
+*/
+	private class TabClickListener implements TabListener {
+
+		public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
+//			if (tabIndex == tPanel.getTabBar().getTabCount() - 1)
+//				return false;
+			return true;
+		}
+
+//        public void onTabSelected(SourcesTabEvents sender, int tabIndex) {}
+
+		public void onTabSelected(SourcesTabEvents sender, int tabIndex){
+			currentselect = tabIndex;
+		}
+
+	}
+	
 	
 	/**
 	 * Click Listener for printing functionality
@@ -236,15 +260,31 @@ public class WUF extends DockPanel implements WindowResizeListener {
     $wnd.print();
 }-*/;
 
-    public static void removeLocation( int type , final LocationEntry loc ){
+    public static void favoriteLocation( int type , final LocationEntry loc ){
     	// type == 0 , move to Favorite
     	if( type == 0 ){
-    		//加入cache中
+    		//畫在畫面上
     		favPanel.addFavorite( loc.name , loc.x, loc.y , loc.geocell );
+    		
+    		//資料送入cache中server
+    		DataSwitch.get().sendNode(username() , 1 , loc.name , loc.x , loc.y , loc.geocell , new CoordinateSendCallback() );
+    		
     		locPanel.removeLocation( loc );
     	}
     }
     
+    public static void errorLocation( int type , final LocationEntry loc ){
+    	// type == 0 , move to Favorite
+    	if( type == 0 ){
+    		//移動TAB
+    		errPanel.addError( loc.name , loc.x, loc.y , loc.geocell );
+    		
+    		//資料送入cache中server
+    		DataSwitch.get().sendNode( username() , 2 , loc.name , loc.x , loc.y , loc.geocell , new CoordinateSendCallback() );
+    		
+    		locPanel.removeLocation( loc );
+    	}
+    }
     
 	/**
 	 * Click Listener for email functionality

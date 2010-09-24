@@ -2,16 +2,13 @@ package tw.kayjean.ui.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Iterator;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tw.kayjean.ui.client.model.Node;
-import tw.kayjean.ui.client.rpc.CoordinateService;
 import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
 
 public class DataSwitch implements CoordinateServiceAsync {
@@ -73,7 +70,7 @@ public class DataSwitch implements CoordinateServiceAsync {
 		//尋找是否有出現過
 		int i = cacheTable.size();
 		for( int j = 0 ; j < i ; j++ ){
-			Node n = (Node)cacheTable.get(i);
+			Node n = (Node)cacheTable.get(j);
 			if( n.name.equalsIgnoreCase(name) )
 				cacheTable.remove(j);
 		}

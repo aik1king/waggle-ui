@@ -28,10 +28,11 @@ public class StatisticsTask extends TimerTask
     {
         Calendar cal = Calendar.getInstance(); 
         //System.out.println(isRunning);
-        if (!isRunning) 
-        { 
-            if (STATISTICS_SCHEDULE_HOUR == cal.get(Calendar.HOUR_OF_DAY)) //查看是否为凌晨
-            { 
+//        if (!isRunning) 
+//        { 
+//        	if (true)
+            //if (STATISTICS_SCHEDULE_HOUR == cal.get(Calendar.HOUR_OF_DAY)) //查看是否为凌晨
+//            { 
                 isRunning = true; 
                 context.log("开始执行指定任务");
                 
@@ -41,12 +42,12 @@ public class StatisticsTask extends TimerTask
                 //指定任务执行结束
                 isRunning = false;
                 context.log("指定任务执行结束"); 
-            } 
-        } 
-        else 
-        {
-            context.log("上一次任务执行还未结束");
-        }
+//            } 
+//        } 
+//        else 
+//        {
+//            context.log("上一次任务执行还未结束");
+//        }
     
     }
 
@@ -56,6 +57,9 @@ public class StatisticsTask extends TimerTask
     public void executeTask()
     {
         System.out.println("任务1");
+        //印出目前mcache裡面內容
+        MemCache.showdata();
         System.out.println("任务2");
+        
     }
 }

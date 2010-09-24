@@ -246,7 +246,7 @@ public class RouteFlow extends Composite {
         
         public void onDrop(DragContext context) {
             super.onDrop(context);
-            WUF.removeLocation( myType , (LocationEntry)(context.draggable));
+            WUF.favoriteLocation( myType , (LocationEntry)(context.draggable));
         }
 
         public void onEnter(DragContext context) {
