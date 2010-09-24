@@ -20,4 +20,9 @@ public class CacheData {
 	public void additem( Node d ){
 		data.add(d);
 	}
+	
+	public void additem( List<Node> d ){
+		data.addAll(d);
+	}
+	
 }

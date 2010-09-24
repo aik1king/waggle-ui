@@ -18,8 +18,7 @@
 
 	<!-- Lets us use Graph-related objects everywhere -->	
 
-<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x&amp;key=ABQIAAAAh7YfkaBHi2ZeQWYxA00oABRTPNWZRgpPHOkAwwy3RmzjjAauPRSQQtAt_3_ywQ7NUD6_Hnw2KgOmgw" />
-
+<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x&amp;key=ABQIAAAAh7YfkaBHi2ZeQWYxA00oABScZUigKRr9AyP7eqvVhM8r_5oX5BSIQQoDTw2oyYH2x2DWg1bcPMHu1Q" />
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='tw.kayjean.ui.client.Waggle_ui'/>

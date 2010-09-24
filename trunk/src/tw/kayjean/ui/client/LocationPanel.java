@@ -111,7 +111,6 @@ public class LocationPanel extends Composite {
             openRouteBar();
             WUF.selectRouteTab();
             
-//�H�e�O�i��ROUTE�p��,�ҥH�|���o�ӻݭn
             if (routeFlow.dragElements.getWidgetCount() == 1) {
                 signalMaptoDrawCoordinate(routeFlow.getLocString(0));
             }
@@ -154,8 +153,9 @@ public class LocationPanel extends Composite {
     		// 0 means location , 1 means favorite
             LocationEntry newloc = new LocationEntry(loc , x , y , 0 , geocell );
             routeFlow.add(newloc); // Add to display
-            //加入地圖的點
-            WUF.mPanel.AddOverlay(y, x, loc , 0 );
+            //如果目前正在看自己TAB,就在地圖加入點
+            if( WUF.currentselect == 0 )
+            	WUF.mPanel.AddOverlay(y, x, loc , 0 );
             openRouteBar();
     	}
     }

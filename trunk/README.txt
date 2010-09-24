@@ -16,7 +16,8 @@ SERVER那邊,拿到一組之後,每個項目只保留最後一個,和先前合�
 1.資料放上GAE的過程真的很麻煩
 2.GAE不一定能順利使用在CHINA
 
-
+facebook放入 http://127.0.0.1 正在實驗中
+可是這樣怎麼拿到前端呢?傷腦筋,再說吧
 
 
 
@@ -57,26 +58,24 @@ UI
 			http://www.died.tw/2010/07/google-openid.html
 		self
 	詳細內容
-		>>>>>>>>可以點選詳細資料<<<<<<<<
+		>>>>>>>>2可以點選詳細資料<<<<<<<<
 			點選的時候,SERVER會從S3取出檔案,包裝成資料結構,送到GWT
 		出現詳細內容時,最好有一張很大圖片
 	搜尋
 		還不能搜尋
 
 SERVER
-	>>>>>>>>2cache機制<<<<<<<<
-		確認完成,先不需要加入時間機制,反正記憶體這麼多,人那麼少,能夠動,動的快為原則
-	>>>>>>>>1準備放在server上面長期使用<<<<<<<<
-		http://aws-musings.com/how-to-deploy-a-java-web-application-on-ec2-instance/
-		aws config要能夠讀取
-		安裝新的ami
-			可以安裝web apache/ tomcat/ 使用目前server
-			安裝測試程式war
-			寫入ami
-			重新啟動ami
-			將目前dns轉移到那個位置
-		用一個IP接上去
-			目前DNS要移轉到新IP上
+	cache機制
+		先不需要加入時間機制,反正記憶體這麼多,人那麼少,能夠動,動的快為原則
+	準備放在server上面長期使用
+		單機可以測試
+			開機確定可以執行WEB SERVER
+			確定GROUP並沒有把其他IP檔掉
+		自動讀取新的資料
+			加入s3拷貝功能,能夠到s3裡面讀取新資料
+			http://aws-musings.com/how-to-deploy-a-java-web-application-on-ec2-instance/
+		目前DNS要移轉到新IP上
+	aws config要能夠讀取
 	資料整合時,如果項目數量不夠,就擴大抓取範圍重新查詢一次
 	讀取
 		不需要每次讀取s3數值,放在local filesystem當作cache,過一陣子自動更新
@@ -97,4 +96,18 @@ MISC
 	系統很多經緯度不太正確情形,現在都草草處理,不太對啦
 	小舅的地圖MERGE,似乎很有趣
 	
-	十月初,測試能不能取得pixiu
+	十月初,測試能不能取得pixiu,waggler
+	
+	
+CALMAP字眼拿掉
+compile實在太慢,是不是多用了什麼import宣告
+奇怪,並沒有一開始就找到FAV的內容,要進入之後才找到,為什麼呢?
+ERROR REPORT並沒有進入FILE SYSTEM
+ERROR REPORT要進行更多處理
+	數字被拿掉了:17公里
+	著名行政區:新竹市
+	奇怪詞彙:餘暉
+畫面實在不太能看
+拿掉thisis1
+資料加進去要有總數限制啦,太恐怖了
+TAB點選不同TAB時,舊資料不會消失,感覺很怪
