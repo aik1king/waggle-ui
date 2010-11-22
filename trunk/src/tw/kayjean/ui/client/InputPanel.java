@@ -99,7 +99,7 @@ public class InputPanel extends Composite {
      * Tells the LocationPanel to add a new Location
      */
     private void signalToAddLoc() {
-        WUF.locPanel.addLocation(textBox.getText());
+//        WUF.locPanel.addLocation(textBox.getText());
         textBox.setText("");
         textBox.setFocus(true);
     }

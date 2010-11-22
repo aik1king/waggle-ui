@@ -55,6 +55,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
 	public static final LocationPanel locPanel = new LocationPanel();
 	public static final FavoritePanel favPanel = new FavoritePanel();
 	public static final ErrorPanel errPanel = new ErrorPanel();
+	public static final WhiichPanel whiichPanel = new WhiichPanel();
 	
 	//delete public static final OptionsPanel oPanel = new OptionsPanel();
 	private static final SimplePanel flashPanel = new SimplePanel();
@@ -110,6 +111,7 @@ public class WUF extends DockPanel implements WindowResizeListener {
         tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See POIs in Map</span></div>", true); // List of locations to plot, and a plot button
         tPanel.add(favPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See Your Favorite</span></div>", true);
         tPanel.add(errPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>Error Report</span></div>", true);
+        tPanel.add(whiichPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>Whiich Report</span></div>", true);
 //delete        tPanel.add(oPanel, "<div id=\"tab_options\" class=\"one_tab\"><span>Set Advanced Options</span></div>", true);
 //        tPanel.add(flashPanel, "<div id=\"tab_info\" class=\"one_tab\"><span>Show Pic and Information</span></div>", true);
 //delete        tPanel.add(poiPanel, "<div id=\"tab_poi\" class=\"one_tab\"><span>Points of Interest</span></div>", true);
@@ -237,6 +239,19 @@ public class WUF extends DockPanel implements WindowResizeListener {
 
 		public void onTabSelected(SourcesTabEvents sender, int tabIndex){
 			currentselect = tabIndex;
+			//清除所有畫面上的點
+			if( currentselect == 0 )
+				locPanel.closeRouteBar();
+			else if( currentselect == 1 )
+				favPanel.closeRouteBar();
+			else if( currentselect == 2 )
+				errPanel.closeRouteBar();
+			else if( currentselect == 3 )
+				whiichPanel.closeRouteBar();
+				
+			mPanel.Clear();
+			//啟動map更新機制
+			mPanel.rerefesh();
 		}
 
 	}
@@ -264,11 +279,9 @@ public class WUF extends DockPanel implements WindowResizeListener {
     	// type == 0 , move to Favorite
     	if( type == 0 ){
     		//畫在畫面上
-    		favPanel.addFavorite( loc.name , loc.x, loc.y , loc.geocell );
-    		
+    		favPanel.addFavorite( loc.n );
     		//資料送入cache中server
-    		DataSwitch.get().sendNode(username() , 1 , loc.name , loc.x , loc.y , loc.geocell , new CoordinateSendCallback() );
-    		
+    		DataSwitch.get().sendNode(username() , 1 , loc.n , new CoordinateSendCallback() );
     		locPanel.removeLocation( loc );
     	}
     }
@@ -277,11 +290,20 @@ public class WUF extends DockPanel implements WindowResizeListener {
     	// type == 0 , move to Favorite
     	if( type == 0 ){
     		//移動TAB
-    		errPanel.addError( loc.name , loc.x, loc.y , loc.geocell );
-    		
+    		errPanel.addError( loc.n );
     		//資料送入cache中server
-    		DataSwitch.get().sendNode( username() , 2 , loc.name , loc.x , loc.y , loc.geocell , new CoordinateSendCallback() );
-    		
+    		DataSwitch.get().sendNode( username() , 2 , loc.n, new CoordinateSendCallback() );
+    		locPanel.removeLocation( loc );
+    	}
+    }
+
+    public static void whiichLocation( int type , final LocationEntry loc ){
+    	// type == 0 , move to Favorite
+    	if( type == 0 ){
+    		//移動TAB
+    		whiichPanel.addWhiich( loc.n );
+    		//資料送入cache中server
+    		DataSwitch.get().sendNode( username() , 3 , loc.n, new CoordinateSendCallback() );
     		locPanel.removeLocation( loc );
     	}
     }

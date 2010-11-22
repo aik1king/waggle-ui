@@ -1,6 +1,7 @@
 package tw.kayjean.ui.client;
 
-import com.allen_sauer.gwt.dnd.client.HasDragHandle;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,6 +15,11 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.allen_sauer.gwt.dnd.client.HasDragHandle;
+
+import tw.kayjean.ui.client.model.Node;
+import tw.kayjean.ui.client.model.Poi;
+
 /**
  * Inner class representing one element of the routeFlow.
  * Contains both a label (name) of the Location, and a delete button for it, plus extras.
@@ -23,13 +29,12 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
 
     private PushButton bDelete = new PushButton(new Image("images/button_remove.png"),this);
     private PushButton bError = new PushButton(new Image("images/button_error.png"),this);
+    private PushButton bWhiich = new PushButton(new Image("images/button_whiich.png"),this);
     private PushButton bDetails = new PushButton(new Image("images/button_details.png"),this);
     private ToggleButton bShowOnly = new ToggleButton(new Image("images/button_eye.gif"),this);
     private Label loctext;
-    protected String name;
-    protected double x;
-    protected double y;
-    protected String geocell;
+    
+    protected Node n = new Node();
 
     // Stopover options for *after* this Location
 //delete    private StopoversSet stopovers = new StopoversSet();
@@ -38,19 +43,22 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
     private VerticalPanel exts;
 
     // In buildStopOverOptions()
-    private CheckBox passCafe = new CheckBox("place to eat");
-    private CheckBox passLibrary = new CheckBox("library");
-    private CheckBox passLab = new CheckBox("Computer Lab (students only)"); 
+//    private CheckBox passCafe = new CheckBox("place to eat");
+//    private CheckBox passLibrary = new CheckBox("library");
+//    private CheckBox passLab = new CheckBox("Computer Lab (students only)");
+    
+    private HTML poidetail = new HTML("");
 
     private int myIndex;
     private int myType;
 
-    public LocationEntry(final String inName , double inx , double iny , int type , String ingeocell ) {
-        name = inName;
-        x = inx;
-        y = iny;
+    public LocationEntry(final String inName , String infullname , double inx , double iny , int type , String ingeocell ) {
+    	n.name = inName;
+    	n.fullname = infullname;
+    	n.x = inx;
+    	n.y = iny;
         myType = type;
-        geocell = ingeocell;
+        n.geocell = ingeocell;
         VerticalPanel contents = new VerticalPanel();
 
         contents.add(buildLabel());
@@ -63,7 +71,7 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
     }
     
     public LocationEntry(final String inName) {
-        name = inName;
+    	n.name = inName;
         VerticalPanel contents = new VerticalPanel();
 
         contents.add(buildLabel());
@@ -83,19 +91,21 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
      */
     private HorizontalPanel buildLabel() {
         HorizontalPanel p = new HorizontalPanel();
-        loctext = new Label(name);
+        loctext = new Label(n.name);
         
         HorizontalPanel buttons = new HorizontalPanel();
         buttons.add(bDetails);
+        buttons.add(bWhiich);
         buttons.add(bError);
         buttons.add(bDelete);
 
         p.add(loctext);
         p.add(buttons);
 
-        bDelete.setTitle("Click to favorite \"" + name + "\"");
-        bError.setTitle("Click to error report \"" + name + "\"");
-        bDetails.setTitle("Click to show details about \"" + name + "\"");
+        bDelete.setTitle("Click to favorite \"" + n.name + "\"");
+        bError.setTitle("Click to error report \"" + n.name + "\"");
+        bWhiich.setTitle("Click to wish list \"" + n.name + "\"");
+        bDetails.setTitle("Click to show details about \"" + n.name + "\"");
 
         //p.setCellVerticalAlignment(loctext, HasVerticalAlignment.ALIGN_MIDDLE);
         //p.setCellHorizontalAlignment(bDelete, HasHorizontalAlignment.ALIGN_RIGHT);
@@ -109,8 +119,8 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
         exts = new VerticalPanel();
         HorizontalPanel extsBaseRow = new HorizontalPanel();
 
-        soClick = new HTML("<div class=\"togglelink\">set stopovers</div>");
-        soClick.setTitle("Click to add some stopovers in between this location and the next.");
+        soClick = new HTML("<div class=\"togglelink\">詳細內容</div>");
+        soClick.setTitle("顯示詳細內容.");
         soClick.addClickListener(this);
 
         bShowOnly.setTitle("Click to hide all route segments except this one! Click again to restore.");
@@ -146,17 +156,18 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
      */
     private VerticalPanel buildStopOvers() {
         VerticalPanel contents = new VerticalPanel();
-        Label stopoverLabel = new Label("After " + name + ", stop by a:");
+        Label stopoverLabel = new Label("After " + n.name + ", stop by a:");
 
         VerticalPanel stopBoxes = new VerticalPanel();
-        stopBoxes.add(passCafe);        
-        stopBoxes.add(passLibrary);
-        stopBoxes.add(passLab); 
+//        stopBoxes.add(passCafe);        
+//        stopBoxes.add(passLibrary);
+//        stopBoxes.add(passLab); 
+        stopBoxes.add(poidetail);
         //stopBoxes.setStyleName("indented-block");
 
-        passCafe.addClickListener(this);
-        passLibrary.addClickListener(this);
-        passLab.addClickListener(this);
+//        passCafe.addClickListener(this);
+//        passLibrary.addClickListener(this);
+//        passLab.addClickListener(this);
 
         contents.add(stopoverLabel);
         contents.add(stopBoxes);
@@ -168,18 +179,47 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
      * Expands the extras panel
      */
     private void toggleExtras() {
-    	//顯示完整HTML
+    	
     	//重覆點選,可以造成打開,關閉效果
         stopoversPanel.setVisible(!stopoversPanel.isVisible());
+        if( stopoversPanel.isVisible() ){
+        	//可以看到內容
+        	//顯示完整HTML,到server取得POI詳細內容
+        	Waggle_ui.coordService.getNode(n.fullname, new AsyncCallback() {
+
+        		public void onFailure(final Throwable caught) {
+        			GWT.log("Error in CoordinateService!", caught);
+        			caught.printStackTrace();
+        			//        doThisBeforeReturn(true);
+        		}
+
+        		public void onSuccess(final Object result ) {
+
+        			Poi poidata = (Poi) result;
+        			if (poidata == null) {
+        				GWT.log("CoordinateRTreeCallback got a null coordinate!", null);
+        				//MainFrame.message( "找不到符合地點" );
+        				//doThisBeforeReturn(false);
+        				return;
+        			}
+        			poidetail.setHTML( poidata.toString() );
+        		}
+          }
+    		);
+        	
+        }
+        else{
+        	//清除HTML內容
+        }
     }
 
     /**
      * Resets the stopovers required after this Location
      */
     protected void resetOptions() {
-        passCafe.setChecked(false);
-        passLab.setChecked(false);
-        passLibrary.setChecked(false);
+//        passCafe.setChecked(false);
+//        passLab.setChecked(false);
+//        passLibrary.setChecked(false);
     }
 
     /**
@@ -188,7 +228,7 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
      */
     protected void setIndex(int index) {
         myIndex = index;
-        loctext.setText(myIndex+1 + ") " + this.name);
+        loctext.setText(myIndex+1 + ") " + n.name);
     }
 
     /**
@@ -242,8 +282,11 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
         else if (sender == bError) {
         	WUF.errorLocation( myType , this );
         }
+        else if (sender == bWhiich) {
+        	WUF.whiichLocation( myType , this );
+        }
         else if (sender == bDetails) {
-            WUF.setSWF(this.name);
+            WUF.setSWF(n.name);
         }
         else if (sender == soClick) {
             toggleExtras();
@@ -258,11 +301,13 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
             }
 */            
         }
+/*        
         else if (sender == passLab ||
                 sender == passCafe ||
                 sender == passLibrary){
 //            signalMaptoDrawRoute();
         }
+*/        
     }
 
     /**
@@ -271,5 +316,4 @@ public class LocationEntry extends Composite implements ClickListener,HasDragHan
     public Widget getDragHandle() {
         return loctext;
     }
-
 }

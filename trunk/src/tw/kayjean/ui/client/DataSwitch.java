@@ -65,24 +65,26 @@ public class DataSwitch implements CoordinateServiceAsync {
 		
 	}
 	
-	public void sendNode( String username , int type , String name , double x , double y , String geocell , final AsyncCallback cb ){
+	public void sendNode( String username , int type , Node nd , final AsyncCallback cb ){
 
 		//尋找是否有出現過
 		int i = cacheTable.size();
-		for( int j = 0 ; j < i ; j++ ){
+		for( int j = (i - 1) ; j >= 0 ; j-- ){
 			Node n = (Node)cacheTable.get(j);
-			if( n.name.equalsIgnoreCase(name) )
+			if( n.name.equalsIgnoreCase(nd.name) )
 				cacheTable.remove(j);
 		}
 		Node n2 = new Node();
-		n2.name = name;
+		n2.name = nd.name;
+		n2.fullname = nd.fullname;
 		n2.type = type;
-		n2.x = x;
-		n2.y = y;
-		n2.geocell = geocell;
+		n2.x = nd.x;
+		n2.y = nd.y;
+		n2.geocell = nd.geocell;
+		n2.rank = nd.rank;
 		cacheTable.add(n2);
 		
-		Waggle_ui.coordService.sendNode( username , type , name , x , y , geocell , new AsyncCallback<Integer>() {
+		Waggle_ui.coordService.sendNode( username , type , nd , new AsyncCallback<Integer>() {
 
             public void onFailure(Throwable caught) {
               cb.onFailure(caught);
@@ -152,7 +154,6 @@ public class DataSwitch implements CoordinateServiceAsync {
             }
 
             public void onSuccess(List result) {
-            	cache.put(QueryKey, result);
             	
         		for (Iterator<Node> iter1 = result.iterator(); iter1.hasNext();) {
         			Node n = iter1.next();
@@ -171,7 +172,7 @@ public class DataSwitch implements CoordinateServiceAsync {
         			}
         		}
             	
-            	
+            	cache.put(QueryKey, result);            	
               cb.onSuccess(result);
             }
       }
