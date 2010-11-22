@@ -6,15 +6,14 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import tw.kayjean.ui.client.model.Node;
+import tw.kayjean.ui.client.model.Poi;
 
 @RemoteServiceRelativePath("coordinate")
 public interface CoordinateService extends RemoteService{
 	//某個景點名稱丟入,取出詳細描述和說明
-	 public Node getNode(String s);
+	 public Poi getNode(String s);
 	 public String getIPLocation();
 	 public List getRTree( String username , String name );
-	 
-	 public Integer sendNode( String username , int type , String name , double x , double y , String geocell );
-	 
+	 public Integer sendNode( String username , int type , Node nd );
 	 public List getLocations(String prefix, int limit);
 }

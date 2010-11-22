@@ -34,6 +34,7 @@ import com.allen_sauer.gwt.dnd.client.drop.IndexedDropController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
 
 
+import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateCallback;
 import tw.kayjean.ui.client.rpc.TastingCallback;
 
@@ -122,11 +123,12 @@ public class LocationPanel extends Composite {
     }
 */
     
+/*    
     // Overloaded: default is that the location is input using the textbox
     public void addLocation(final String loc) {
         addLocation(loc, true);
     }
-
+*/
     /**
      * Will add a new location to the current structures, possibly triggering an
      * auto-routing.
@@ -137,29 +139,30 @@ public class LocationPanel extends Composite {
         LocationEntry tmpEntry;
         for (int i = routeFlow.size() - 1 ; i >= 0 ; i--) {
             tmpEntry = routeFlow.getEntry(i);
-            if( !WUF.mPanel.pointinbox(tmpEntry.y, tmpEntry.x) ){
+            if( !WUF.mPanel.pointinbox(tmpEntry.n.y, tmpEntry.n.x) ){
             	routeFlow.remove(tmpEntry);
-            	WUF.mPanel.RemoveOverlay( tmpEntry.name );
+            	WUF.mPanel.RemoveOverlay( tmpEntry.n.name );
             }
         }
     	return;
     }
     
-    public void addLocation(final String loc, double x , double y , String geocell ) {
+    public void addLocation(final Node n ) {
     	
     	//先進行確認,是否存在,不存在才要繼續
-    	if( routeFlow.checkexist( loc ) == false ){
+    	if( routeFlow.checkexist( n.name ) == false ){
             // We assume that we're really going to add a location now
-    		// 0 means location , 1 means favorite
-            LocationEntry newloc = new LocationEntry(loc , x , y , 0 , geocell );
+    		// 0 means location , 1 means favorite , 2 means error
+            LocationEntry newloc = new LocationEntry( n.name , n.fullname , n.x , n.y , 0 , n.geocell );
             routeFlow.add(newloc); // Add to display
-            //如果目前正在看自己TAB,就在地圖加入點
+            //加入地圖的點
             if( WUF.currentselect == 0 )
-            	WUF.mPanel.AddOverlay(y, x, loc , 0 );
+            	WUF.mPanel.AddOverlay(n.y, n.x, n.name , 1 );
             openRouteBar();
     	}
     }
     
+/*    
     public void addLocation(final String loc, boolean byTextBox) {
         if (byTextBox) {
             if (loc.equals("") || !WUF.inPanel.isValidLocation(loc)) {
@@ -197,7 +200,8 @@ public class LocationPanel extends Composite {
         
         WUF.selectRouteTab();
     }
-
+*/
+    
     /**
      * Takes a location out of our structures, possibly triggering an
      * auto-rerouting.
@@ -236,7 +240,7 @@ public class LocationPanel extends Composite {
      * Hides the route bar, which implicitly means that all locations are gone.
      * Thus, just to be safe, clears the data structures again.
      */
-    private void closeRouteBar() {
+    public void closeRouteBar() {
         routeFlow.clear();
         routeFlow.setVisible(false);
         title.setText("Your Route (Is Empty)");

@@ -120,7 +120,7 @@ public class RouteFlow extends Composite {
      * @return String of Location at index
      */        
     protected String getLocString(int index) {
-        return ((LocationEntry) dragElements.getWidget(index)).name;
+        return ((LocationEntry) dragElements.getWidget(index)).n.name;
     }
 
 /*delete    
@@ -132,14 +132,14 @@ public class RouteFlow extends Composite {
     public LocationEntry getEntry(int index) {
         return ((LocationEntry) dragElements.getWidget(index));
     }
-    
+
     protected boolean checkexist( String cname ) {
         for (int i = 0; i < this.size(); i++) {
             String name = this.getLocString(i);
             //rank之下的就不需要重新計算了
         	//因為每一個一定是依照重要性排序的
         	//所以只要比對到目前排序最後一個就可以了
-            int rank = 3;
+            //int rank = 3;
             if( cname.equalsIgnoreCase(name) )
             	return true;
         }

@@ -35,6 +35,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import com.thoughtworks.xstream.XStream;
 
 import tw.kayjean.ui.client.model.Node;
+import tw.kayjean.ui.client.model.Poi;
 import tw.kayjean.ui.client.rpc.CoordinateService;
 
 /**
@@ -60,6 +61,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	S3Bucket testBucket1 = null;
 	S3Bucket testBucket2 = null;
 	S3Bucket testBucket3 = null;
+	S3Bucket testBucket4 = null;
 	
 //	MemCache mcache = new MemCache();
 	
@@ -68,7 +70,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
                 //sds = SamplesUtils.loadASWDB(); 
-                sds = new SimpleDB("" , "" , false);
+				sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);  
                 sds.setSignatureVersion(1);
                 
                 /*
@@ -92,9 +94,9 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			}
 		}
 
-		if( testBucket1 == null || testBucket2 == null || testBucket3 == null ){
+		if( testBucket1 == null || testBucket2 == null || testBucket3 == null || testBucket4 == null ){
 			try {
-				AWSCredentials awsCredentials = new AWSCredentials("" , "");
+				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
 				s3Service = new RestS3Service(awsCredentials);
 				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
@@ -102,6 +104,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 				testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
 				//儲存長期間個人資料.
 				testBucket3 = s3Service.getOrCreateBucket("xmluserdata-kayjean");
+				//景點詳細資料
+				testBucket4 = s3Service.getOrCreateBucket("upload-kayjean");
 			}
 			catch( Exception e ){
 				System.out.println( e.toString() );
@@ -135,8 +139,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	    	
 			Node avgNode = new Node();
 			avgNode.name = "thisis1";
-			avgNode.y = 121.0;
-			avgNode.x = 24.5;
+			avgNode.x = 121.0;
+			avgNode.y = 24.5;
 			avgNode.type = 0;
 			avgNodes.add(avgNode);
 			
@@ -166,17 +170,20 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	
 	            		Node avgNode2 = new Node();
 	            		
+	            		avgNode2.fullname = id;
 	            		avgNode2.type = 0;
 	                    for (ItemAttribute attr : items.get(id)) {
 	                        //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
 	                    	if( attr.getName().equalsIgnoreCase("lon") )
-	                    		avgNode2.y = Double.parseDouble(attr.getValue());
-	                    	else if( attr.getName().equalsIgnoreCase("lat") )
 	                    		avgNode2.x = Double.parseDouble(attr.getValue());
+	                    	else if( attr.getName().equalsIgnoreCase("lat") )
+	                    		avgNode2.y = Double.parseDouble(attr.getValue());
 	                    	else if( attr.getName().equalsIgnoreCase("targetname") )
 	                    		avgNode2.name = attr.getValue();
 	                    	else if( attr.getName().equalsIgnoreCase("l10") )
 	                    		avgNode2.geocell = attr.getValue();
+	                    	else if( attr.getName().equalsIgnoreCase("rank") )
+	                    		avgNode2.rank = Integer.parseInt(attr.getValue());
 	                    }
 	                    itemCount++;
 	            		avgNodes.add(avgNode2);
@@ -262,13 +269,13 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
         	if( l != null ){
         		for( int i = 0 ; i < l.size() ; i++ ){
         			Node n = l.get(i);
-        			double t = n.x;
-        			n.x = n.y;
-        			n.y = t;
+//        			double t = n.x;
+//        			n.x = n.y;
+//        			n.y = t;
         			if( n.geocell.startsWith(name)){
         				//準備加入,但最好可以簡化
         				//Collections.sort
-        				for( int j = 0 ; j < avgNodes.size() ; j++ ){
+        				for( int j = avgNodes.size() -1  ; j >= 0  ; j-- ){
         					Node n2 = (Node)avgNodes.get(j);
         					if( n2.name.equalsIgnoreCase(n.name )){
         						//移除地圖,保留個人設定
@@ -284,7 +291,28 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		return avgNodes;
 	}
 
-	public Node getNode(String s){
+	public Poi getNode(String s){
+		//輸入一個景點,找出詳細描述內容,顯示在BROWSER上
+		boolean awsexist = false;
+		S3Object objectComplete2 = null;
+        try {
+        	objectComplete2 = s3Service.getObject(testBucket4, s );
+        	awsexist = true;
+        } catch ( Exception e) {
+        }
+        if( awsexist == true )
+        {
+        	try{
+        		XStream xstream = new XStream();
+        		return (Poi)xstream.fromXML(
+        				ServiceUtils.readInputStreamToString
+        				(objectComplete2.getDataInputStream(), "UTF-8")
+        				);
+			}
+			catch(Exception e ){
+				System.out.println( e );
+			}
+        }
 		return null;
 	}
 	
@@ -314,9 +342,9 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
                     for (ItemAttribute attr : items.get(id)) {
                         //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
                     	if( attr.getName().equalsIgnoreCase("lon") )
-                    		avgNode2.y = Double.parseDouble(attr.getValue());
-                    	else if( attr.getName().equalsIgnoreCase("lat") )
                     		avgNode2.x = Double.parseDouble(attr.getValue());
+                    	else if( attr.getName().equalsIgnoreCase("lat") )
+                    		avgNode2.y = Double.parseDouble(attr.getValue());
                     	else if( attr.getName().equalsIgnoreCase("targetname") )
                     		avgNode2.name = attr.getValue();
                     } 
@@ -358,15 +386,10 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		return x1 + x2 + x3 + x4;
 	}
 	
-	public Integer sendNode( String username , int type , String name , double x , double y , String geocell ){
-		Node n = new Node();
+	public Integer sendNode( String username , int type , Node n ){
 		n.type = type;
-		n.name = name;
-		n.x = x;
-		n.y = y;
-		n.geocell = geocell;
 		
-		if( type == 1 || type == 2 ){
+		if( type == 1 || type == 2 || type == 3 ){
 			//寫入興趣點透過memorycache
         	List<Node> l =MemCache.getcache(username); 
         	if( l == null ){

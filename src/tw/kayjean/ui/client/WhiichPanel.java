@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateSendCallback;
 
-public class ErrorPanel extends Composite {
+public class WhiichPanel extends Composite {
 
     protected RouteFlow routeFlow = new RouteFlow(); // Holds LocationEntrys
     private VerticalPanel routeTab = new VerticalPanel(); // Holds frame of routeFlow
@@ -34,13 +34,13 @@ public class ErrorPanel extends Composite {
      */
     private Map overlaysMap = new HashMap();
 
-    public ErrorPanel() {
+    public WhiichPanel() {
         title.setStyleName("tabTitle");
         routeTab.add(title);
         routeTab.add(routeFlow);
 
         initWidget(routeTab);
-        this.setStyleName("errorPanel");
+        this.setStyleName("whiichPanel");
 
         routeFlow.setVisible(false);
     }
@@ -53,8 +53,8 @@ public class ErrorPanel extends Composite {
     }
 
     // Overloaded: default is that the location is input using the textbox
-    public void addError(final String loc) {
-        addError(loc, true);
+    public void addWhiich(final String loc) {
+        addWhiich(loc, true);
     }
 
     /**
@@ -75,21 +75,22 @@ public class ErrorPanel extends Composite {
     	return;
     }
     
-    public void addError(final Node n ) {
+    public void addWhiich(final Node n ) {
     	
     	//先進行確認,是否存在,不存在才要繼續
     	if( routeFlow.checkexist( n.name ) == false ){
             // We assume that we're really going to add a location now
-    		// 0 means location , 1 means favorite , 2 means error
-            LocationEntry newloc = new LocationEntry( n.name , n.fullname , n.x , n.y , 2 , n.geocell );
+    		// 0 means location , 1 means favorite , 2 means error , 3 means whiich
+            LocationEntry newloc = new LocationEntry( n.name , n.fullname , n.x , n.y , 1 , n.geocell );
             routeFlow.add(newloc); // Add to display
             //加入地圖的點
-            if( WUF.currentselect == 2 )
-            	WUF.mPanel.AddOverlay(n.y, n.x, n.name , 2 );
+            if( WUF.currentselect == 3 )
+            	WUF.mPanel.AddOverlay(n.y, n.x, n.name , 3 );
             openRouteBar();
     	}
     }
-    public void addError(final String loc, boolean byTextBox) {
+    
+    public void addWhiich(final String loc, boolean byTextBox) {
         if (byTextBox) {
             if (loc.equals("") || !WUF.inPanel.isValidLocation(loc)) {
             	WUF.message("You did not type a valid location. Try pressing Enter or Tab before finishing, to autocomplete!");

@@ -110,44 +110,9 @@ public class MapPanel extends Composite {
 		baseIcon.setShadowSize(Size.newInstance(37, 34));
 		baseIcon.setIconAnchor(Point.newInstance(9, 34));
 		baseIcon.setInfoWindowAnchor(Point.newInstance(9, 2));
-
 		MapMoveEndHandler h = new MapMoveEndHandler() {
-
 			public void onMoveEnd(MapMoveEndEvent e) {
-				//if (map.getZoomLevel() > 12) {
-					if (moveflag == true) {
-						double w = map.getBounds().getSouthWest()
-								.getLongitude(); //西南經度
-						double ee = map.getBounds().getNorthEast()
-								.getLongitude(); //東北經度
-						double s = map.getBounds().getSouthWest().getLatitude(); //西南緯度
-						double n = map.getBounds().getNorthEast().getLatitude(); //東北緯度
-						//地圖視窗移動,引發尋找相對應資料
-						//相對應資料取得後,逐筆加入BOX中
-						//並且將TAG加入地圖上
-						//先採用這種比較簡單的運作方式
-						//未來再採用gae比較複雜運作方式
-						//目前android範例程式和gae比較相似,用相同表現方式
-						//順序則是放在這個之後再研究
-						
-						//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
-						WUF.locPanel.checkpointinbox();
-						
-						//先塞入原本cache項目
-						DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
-
-						List<String> r = null;
-						Geocell eee = new Geocell();
-						r = eee.best_bbox_search_cells(n, ee , s, w);
-						for (int i = 0; i < r.size(); i++) {
-							//每一個方格進行處理
-							DataSwitch.get().getRTree( WUF.username() , r.get(i) , new CoordinateRTreeCallback());
-						}
-
-					} else
-						moveflag = true;
-				//}
-				// textBox.setText(textBox.getText() + "onMove()");
+				rerefesh();
 			}
 		};
 		map.addMapMoveEndHandler(h);
@@ -156,12 +121,14 @@ public class MapPanel extends Composite {
 		Waggle_ui.coordService.getIPLocation(new CoordinateIPLocation());
 	}
 
+	
 	public InfoWindow GetInfoWnd() {
 		return map.getInfoWindow();
 	}
 
 	public void Clear() {
 		map.clearOverlays();
+		_overlays.clear();
 	}
 
 	public void SetMoveFlag() {
@@ -204,6 +171,47 @@ public class MapPanel extends Composite {
 //		map.setSize(width + "px", height + "px");
 	}
 
+	public void rerefesh() {
+		if (moveflag == true) {
+			double w = map.getBounds().getSouthWest()
+					.getLongitude(); //西南經度
+			double ee = map.getBounds().getNorthEast()
+					.getLongitude(); //東北經度
+			double s = map.getBounds().getSouthWest().getLatitude(); //西南緯度
+			double n = map.getBounds().getNorthEast().getLatitude(); //東北緯度
+			//地圖視窗移動,引發尋找相對應資料
+			//相對應資料取得後,逐筆加入BOX中
+			//並且將TAG加入地圖上
+			//先採用這種比較簡單的運作方式
+			//未來再採用gae比較複雜運作方式
+			//目前android範例程式和gae比較相似,用相同表現方式
+			//順序則是放在這個之後再研究
+			
+			//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
+			if( WUF.currentselect == 0 )
+				WUF.locPanel.checkpointinbox();
+			else if( WUF.currentselect == 1 )
+				WUF.favPanel.checkpointinbox();
+			else if( WUF.currentselect == 2 )
+				WUF.errPanel.checkpointinbox();
+			else if( WUF.currentselect == 3 )
+				WUF.whiichPanel.checkpointinbox();
+			
+			//先塞入原本cache項目
+			DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
+
+			List<String> r = null;
+			Geocell eee = new Geocell();
+			r = eee.best_bbox_search_cells(n, ee , s, w);
+			for (int i = 0; i < r.size(); i++) {
+				//每一個方格進行處理
+				DataSwitch.get().getRTree( WUF.username() , r.get(i) , new CoordinateRTreeCallback());
+			}
+
+		} else
+			moveflag = true;
+	}
+	
 /*
 	public void AddOverlay( Overlay overlay ) {
 		// map
@@ -227,6 +235,7 @@ public class MapPanel extends Composite {
 		}
 	}
 
+	
 	public void RemoveOverlay(String name) {
 		// map
 		try {

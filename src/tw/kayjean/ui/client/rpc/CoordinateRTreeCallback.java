@@ -47,16 +47,18 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 		for (Iterator locIter = avgNodes.iterator(); locIter.hasNext();) {
 			Node avgNode = (Node) locIter.next();
 			
-			if( WUF.mPanel.pointinbox(avgNode.x, avgNode.y) == true ){
+			if( WUF.mPanel.pointinbox(avgNode.y, avgNode.x) == true ){
 				//如果節點屬於目前視窗範圍,才要加入,不然不需要加入
 				
 				//加入時候,應該依照數值進行排序,分數高的放上面
 				if( avgNode.type == 0 )
-					WUF.locPanel.addLocation(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
+					WUF.locPanel.addLocation(avgNode);
 				else if( avgNode.type == 1 )
-					WUF.favPanel.addFavorite(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
+					WUF.favPanel.addFavorite(avgNode);
 				else if( avgNode.type == 2 )
-					WUF.errPanel.addError(avgNode.name , avgNode.y , avgNode.x , avgNode.geocell );
+					WUF.errPanel.addError(avgNode);
+				else if( avgNode.type == 3 )
+					WUF.whiichPanel.addWhiich(avgNode);
 			}
 			
 /*			
