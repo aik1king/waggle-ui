@@ -70,7 +70,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
                 //sds = SamplesUtils.loadASWDB(); 
-				sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);  
+				sds = new SimpleDB("" , "" , false);  
                 sds.setSignatureVersion(1);
                 
                 /*
@@ -96,7 +96,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 
 		if( testBucket1 == null || testBucket2 == null || testBucket3 == null || testBucket4 == null ){
 			try {
-				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
+				AWSCredentials awsCredentials = new AWSCredentials("" , "");
 				s3Service = new RestS3Service(awsCredentials);
 				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
