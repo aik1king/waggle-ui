@@ -11,5 +11,5 @@ public interface CoordinateServiceAsync {
 	public void getIPLocation(AsyncCallback callback);
 	public void getRTree ( String username , String name , AsyncCallback callback);
 	public void sendNode ( String username , int type , Node nd , AsyncCallback callback );
-	public void getLocations(String prefix, int limit,AsyncCallback callback);
+//	public void getLocations(String prefix, int limit,AsyncCallback callback);
 }

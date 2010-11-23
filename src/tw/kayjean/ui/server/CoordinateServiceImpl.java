@@ -69,8 +69,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		if (sds == null) {
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
-                //sds = SamplesUtils.loadASWDB(); 
-				sds = new SimpleDB("" , "" , false);  
+                //sds = SamplesUtils.loadASWDB();
+				sds = new SimpleDB("" , "" , false);
                 sds.setSignatureVersion(1);
                 
                 /*
@@ -448,6 +448,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	}
 	
 	public String getIPLocation() {
+		//照理說會回傳經緯度,移動到類似地點
 
 /*		
 		try{

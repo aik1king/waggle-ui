@@ -15,5 +15,5 @@ public interface CoordinateService extends RemoteService{
 	 public String getIPLocation();
 	 public List getRTree( String username , String name );
 	 public Integer sendNode( String username , int type , Node nd );
-	 public List getLocations(String prefix, int limit);
+//	 public List getLocations(String prefix, int limit);
 }

@@ -1,11 +1,10 @@
 package tw.kayjean.ui.client;
 
-import java.util.List;
-import java.util.Vector;
-
-//import tw.kayjean.ui.client.LocationPanel.ClearAllListener;
-//import tw.kayjean.ui.client.LocationPanel.RouteFlow.LocationDragHandler;
-//import tw.kayjean.ui.client.LocationPanel.RouteFlow.TrashBinDropController;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
@@ -15,12 +14,6 @@ import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.allen_sauer.gwt.dnd.client.drop.IndexedDropController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Our routelist, where elements are draggable!
@@ -31,54 +24,76 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class RouteFlow extends Composite {
 
+	//整個資料區塊位置,用這個表現
     VerticalPanel dragElements = new VerticalPanel();
-    PickupDragController widgetDragController;
-    private int myType;
-
-    /**
-     * For the Clear All button
-     */
-    private class ClearAllListener implements ClickListener {
-        public void onClick(Widget sender) {
-//            closeRouteBar();
-            WUF.clearMap();
-            WUF.mPanel.recenter();
-        }
-    }
     
+    PickupDragController widgetDragController;
+
     public RouteFlow() {
         VerticalPanel routeAndTrash = new VerticalPanel();
 
         // Clear all button
-        HTML clearAll = new HTML("<div id=\"clear_all\"></div>");
+        HTML clearAll = new HTML("<div id=\"clear_all\">TRASH</div>");
         clearAll.setTitle("Click to clear all locations from this list, or you can drag locations here to delete them as an alternative to clicking the red buttons!");
-        clearAll.addClickListener(new ClearAllListener());
+//        clearAll.addClickListener(new ClearAllListener());
 
         // Define a boundary for the dragging of elements
         AbsolutePanel boundaryPanel = new AbsolutePanel();
         boundaryPanel.add(dragElements);
         
         // Combine Trash and Route
+        //實際項目生成完畢
         routeAndTrash.add(clearAll);
         routeAndTrash.add(boundaryPanel);
 
         // Create new controllers and tie them, plus the dragElements, together
+        //將一個實際區域和DRAG功能結合
         widgetDragController = new PickupDragController(boundaryPanel, true);
         widgetDragController.addDragHandler(new LocationDragHandler());
+        
+        //有排列順序型態
         IndexedDropController widgetDropController = new IndexedDropController(dragElements);
+        //一個新的型態
         TrashBinDropController trashDropController = new TrashBinDropController(clearAll);
+        
         widgetDragController.registerDropController(widgetDropController);
         widgetDragController.registerDropController(trashDropController);
 
+        //生成
         initWidget(routeAndTrash);
-        
+
         // Set Styles
         this.setStyleName("routeflow");
         routeAndTrash.setStyleName("routeandtrash");
         boundaryPanel.setStyleName("dragarea");
-        //dragElements.setStyleName("routelist");
     }
 
+    /**
+     * For the Clear All button
+     */
+/*    
+    private class ClearAllListener implements ClickListener {
+        public void onClick(Widget sender) {
+            WUF.clearMap();
+            WUF.mPanel.recenter();
+        }
+    }
+*/
+    /**
+     * Inner class of RouteFlow that controls what happens on drag movements.
+     */
+    //只是拉來拉去,沒有實際用處
+    private class LocationDragHandler implements DragHandler {
+        public void onDragEnd(DragEndEvent event) {
+//            signalMaptoDrawRoute();
+        }
+        public void onDragStart(DragStartEvent event) {}
+        public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {}
+        public void onPreviewDragStart(DragStartEvent event) throws VetoDragException {}
+    }
+
+    
+    
     /**
      * Add LocationEntries via this method.
      * @param le New LocationEntry object
@@ -123,12 +138,6 @@ public class RouteFlow extends Composite {
         return ((LocationEntry) dragElements.getWidget(index)).n.name;
     }
 
-/*delete    
-    private StopoversSet getStopoversSet(int index) {
-        return ((LocationEntry) dragElements.getWidget(index)).getStopoversSet();
-    }
-*/
-
     public LocationEntry getEntry(int index) {
         return ((LocationEntry) dragElements.getWidget(index));
     }
@@ -151,22 +160,13 @@ public class RouteFlow extends Composite {
      * For use when calling the RoutingService.
      * @return List
      */
+/*    
     protected List generateLocStringList() {
         List locs = new Vector();
         for (int i = 0; i < this.size(); i++) {
             locs.add(this.getLocString(i));
         }
         return locs;
-    }
-
-/*delete    
-    protected List generateStopoversChangeList() {
-        List sSets = new Vector();
-        // Pull a stopovers set from each LocationEntry
-        for (int i = 0; i < this.size(); i++) {
-            sSets.add(this.getStopoversSet(i));
-        }
-        return sSets;
     }
 */
     
@@ -177,7 +177,8 @@ public class RouteFlow extends Composite {
      * Also undos hiding of LocationEntrys (resetting style)
      * Resets currHighlight to none of the LocationEntrys
      */
-    protected void ensureLocUIConsistency() {
+/*    
+    protected void ensureLocUIConsistency1() {
 
 //        currHighlight = -1;
 
@@ -189,29 +190,9 @@ public class RouteFlow extends Composite {
 
             // Resets style
             this.getEntry(i).setStyleName("locationEntry");
-//kayjean                this.getEntry(i).exts.setStyleName("extras");
-
-            // Ensure stopovers trigger consistency
-//            this.getEntry(i).showExtras();
-//            if (i == this.size()-1) {
-//                this.getEntry(i).hideExtras();
-//            }
-
         }
-//delete    Effects.Effect("Highlight",dragElements);
     }
-
-    /**
-     * Inner class of RouteFlow that controls what happens on drag movements.
-     */
-    private class LocationDragHandler implements DragHandler {
-        public void onDragEnd(DragEndEvent event) {
-//            signalMaptoDrawRoute();
-        }
-        public void onDragStart(DragStartEvent event) {}
-        public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {}
-        public void onPreviewDragStart(DragStartEvent event) throws VetoDragException {}
-    }
+*/
 
     /**
      * This class controls the drop behavior the recycle bin.
@@ -219,12 +200,29 @@ public class RouteFlow extends Composite {
      * @author Simon
      */
     private class TrashBinDropController extends SimpleDropController {
-
         public TrashBinDropController(Widget dropTarget) {
             super(dropTarget);
         }
+        
+        public void onDrop(DragContext context) {
+            super.onDrop(context);
+            //就是放在垃圾桶就是了
+            WUF.favoriteLocation( (LocationEntry)(context.draggable));
+        }
 
-/*            
+        public void onEnter(DragContext context) {
+            super.onEnter(context);
+        }
+
+        public void onLeave(DragContext context) {
+            super.onLeave(context);
+        }
+
+/*原本寫法    	
+    	public TrashBinDropController(Widget dropTarget) {
+            super(dropTarget);
+        }
+
         public DragEndEvent onDrop(Widget reference, Widget draggable, DragController dragController) {
             DragEndEvent event = super.onDrop(reference, draggable, dragController);
             removeLocation((LocationEntry) draggable);
@@ -242,19 +240,6 @@ public class RouteFlow extends Composite {
         public void onPreviewDrop(Widget reference, Widget draggable, DragController dragController) throws VetoDropException {
             super.onPreviewDrop(reference, draggable, dragController);
         }
-*/            
-        
-        public void onDrop(DragContext context) {
-            super.onDrop(context);
-            WUF.favoriteLocation( myType , (LocationEntry)(context.draggable));
-        }
-
-        public void onEnter(DragContext context) {
-            super.onEnter(context);
-        }
-
-        public void onLeave(DragContext context) {
-            super.onLeave(context);
-        }
+*/        
     }
 }

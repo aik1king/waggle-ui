@@ -1,11 +1,11 @@
-package tw.kayjean.ui.client;
+package tw.kayjean.ui.client.examples;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * 
  * Class that returns JsArray from json array 'data' 
- *
+ *　配合facebook增加
  */
 public class DataObject extends JavaScriptObject {
     

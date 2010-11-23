@@ -55,10 +55,12 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 					WUF.locPanel.addLocation(avgNode);
 				else if( avgNode.type == 1 )
 					WUF.favPanel.addFavorite(avgNode);
+/*				
 				else if( avgNode.type == 2 )
 					WUF.errPanel.addError(avgNode);
 				else if( avgNode.type == 3 )
 					WUF.whiichPanel.addWhiich(avgNode);
+*/					
 			}
 			
 /*			

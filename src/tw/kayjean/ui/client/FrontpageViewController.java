@@ -16,9 +16,9 @@ public class FrontpageViewController extends Composite {
 		//這個項目會隨著登入後,自動變成logout文字
 		outer.add ( new HTML ( "<fb:login-button autologoutlink='true' perms='publish_stream,read_stream' /> " ) );
 		outer.add ( new HTML ( "<hr/>" ) );
-		//這一句是加入下面be the first to xxx ,沒什麼用處
-		//outer.add ( new HTML ( "<hr/><fb:comments xid='gwtfb' />" ) );
+		//這一句是加入下面be the first to xxx ,沒特別用處
+		//找到名稱方式是,個人登入後,進入開發者,再點選個人,個人裡面就會有名稱
+		outer.add ( new HTML ( "<hr/><fb:comments xid='albumupload' />" ) );
 		initWidget ( outer );
 	}
-
 }
