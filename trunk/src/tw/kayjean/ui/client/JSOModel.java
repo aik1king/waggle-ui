@@ -9,6 +9,7 @@ import com.google.gwt.core.client.JsArrayString;
 
 /**
  * Java overlay of a JavaScriptObject.
+ * facebook使用
  */
 public abstract class JSOModel extends JavaScriptObject {
 

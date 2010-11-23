@@ -11,11 +11,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
 
+//為了增加cache機制,還有加速運作,有些內容儲存在browser中
+//增加這個項目
 public class DataSwitch implements CoordinateServiceAsync {
 
 	private final Map<String, Object> cache = new HashMap<String, Object>();
 
-	//這組是專門用來處理這次運作資料區
 	//所有資料在不同tab間移動時,都要把資料放入這個hash中
 	//每次畫圖時,都要檢查這個hash有沒有符合項目
 	private final List<Node> cacheTable = new ArrayList<Node>(); 
@@ -35,9 +36,11 @@ public class DataSwitch implements CoordinateServiceAsync {
 		    // occurred:
 
 		  }
-	
+
+	  //景點詳細內容
 	public void getNode(String s, final AsyncCallback cb) {
-		
+
+		//內容不需要cache,直接redirect向server取得
 		Waggle_ui.coordService.getNode(s, new AsyncCallback<Integer>() {
               public void onFailure(Throwable caught) {
                 cb.onFailure(caught);
@@ -50,6 +53,7 @@ public class DataSwitch implements CoordinateServiceAsync {
 		);
 	  }
 	
+	//使用者IP對應經緯度
 	public void getIPLocation( final AsyncCallback cb ){
 		
 		Waggle_ui.coordService.getIPLocation( new AsyncCallback<String>() {
@@ -64,16 +68,20 @@ public class DataSwitch implements CoordinateServiceAsync {
 		);
 		
 	}
-	
+
+	//移轉給別人 或是設定為不要顯示
 	public void sendNode( String username , int type , Node nd , final AsyncCallback cb ){
 
-		//尋找是否有出現過
+		//一個景點,只能設定為是否刪除,或是提供給別人,而且不能轉換
+
+		//只是為了提供給後面畫圖使用
 		int i = cacheTable.size();
 		for( int j = (i - 1) ; j >= 0 ; j-- ){
 			Node n = (Node)cacheTable.get(j);
 			if( n.name.equalsIgnoreCase(nd.name) )
 				cacheTable.remove(j);
 		}
+
 		Node n2 = new Node();
 		n2.name = nd.name;
 		n2.fullname = nd.fullname;
@@ -83,22 +91,22 @@ public class DataSwitch implements CoordinateServiceAsync {
 		n2.geocell = nd.geocell;
 		n2.rank = nd.rank;
 		cacheTable.add(n2);
-		
-		Waggle_ui.coordService.sendNode( username , type , nd , new AsyncCallback<Integer>() {
 
+		//射後不理
+		Waggle_ui.coordService.sendNode( username , type , nd , new AsyncCallback<Integer>() {
             public void onFailure(Throwable caught) {
               cb.onFailure(caught);
             }
-
             public void onSuccess(Integer result) {
               cb.onSuccess(result);
             }
       }
 		);
-		
 	}
 
 
+/*	
+ * 搜尋使用,先不管搜尋
 	public void getLocations( String prefix, int limit , final AsyncCallback cb ){
 		
 		Waggle_ui.coordService.getLocations( prefix , limit , new AsyncCallback<List>() {
@@ -113,21 +121,20 @@ public class DataSwitch implements CoordinateServiceAsync {
 		);
 		
 	}
+*/
 	
+	//所謂的name是geoname
 	public void getRTree ( String username , String name , final AsyncCallback cb){
-
         if( name.equalsIgnoreCase("cache" ) ){
         	if( cacheTable != null && cacheTable.size() > 0 ){
-        		//畫出原本cache內容
+        		//原本cache內容放進系統中,再依照type決定要不要畫出來
         		cb.onSuccess(cacheTable);
         	}
         	return;
         }
-        
 		final String QueryKey = name;
         List cachResult = (List) cache.get(QueryKey);
         if (cachResult != null) {
-        	
     		for (Iterator<Node> iter1 = cachResult.iterator(); iter1.hasNext();) {
     			Node n = iter1.next();
     			for (Iterator<Node> iter2 = cacheTable.iterator(); iter2.hasNext();) {
@@ -144,7 +151,6 @@ public class DataSwitch implements CoordinateServiceAsync {
     				}
     			}
     		}
-        	
             cb.onSuccess(cachResult);
             return;
         }
@@ -152,9 +158,7 @@ public class DataSwitch implements CoordinateServiceAsync {
             public void onFailure(Throwable caught) {
               cb.onFailure(caught);
             }
-
             public void onSuccess(List result) {
-            	
         		for (Iterator<Node> iter1 = result.iterator(); iter1.hasNext();) {
         			Node n = iter1.next();
         			for (Iterator<Node> iter2 = cacheTable.iterator(); iter2.hasNext();) {
@@ -171,13 +175,10 @@ public class DataSwitch implements CoordinateServiceAsync {
         				}
         			}
         		}
-            	
             	cache.put(QueryKey, result);            	
               cb.onSuccess(result);
             }
       }
 		);
-		
 	}
-	
 }

@@ -5,10 +5,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Callback that by default logs the response.
+ * 配合facebook增加
  */
 public class Callback<T> implements AsyncCallback<T> {
 
-    
     public Callback () {
     }
 
@@ -19,7 +19,5 @@ public class Callback<T> implements AsyncCallback<T> {
     public void onSuccess(T result) {
         GWT.log ( result + "" , null );
     }
-    
-    
 
 }

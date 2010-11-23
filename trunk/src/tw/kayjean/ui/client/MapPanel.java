@@ -89,11 +89,6 @@ public class MapPanel extends Composite {
 
 	private Map< String , Overlay > _overlays = new HashMap< String , Overlay >();
 	
-	public boolean pointinbox( double y , double x ){
-		LatLng coordinate = LatLng.newInstance(y,x);
-		return map.getBounds().containsLatLng(coordinate);
-	}
-	
 	public MapPanel() {
 
 		map = new MapWidget(DEFAULT_CENTER, DEFAULT_ZOOM);
@@ -121,40 +116,20 @@ public class MapPanel extends Composite {
 		Waggle_ui.coordService.getIPLocation(new CoordinateIPLocation());
 	}
 
-	
-	public InfoWindow GetInfoWnd() {
-		return map.getInfoWindow();
-	}
-
 	public void Clear() {
 		map.clearOverlays();
 		_overlays.clear();
 	}
 
-	public void SetMoveFlag() {
-
-	}
-
-	public void MoveBound(LatLngBounds bounds) {
-		if (!bounds.isEmpty()) {
-			moveflag = false;
-			int zoom = map.getBoundsZoomLevel(bounds);
-			map.setCenter(bounds.getCenter(), zoom);
-		}
-		return;
-	}
-
+	
 	public void Move(double y, double x, int zoom) {
 		map.setCenter(LatLng.newInstance(y, x), zoom);
 		return;
 	}
 
-	/**
-	 * Dramatically recenters the map.
-	 */
-	protected void recenter() {
-		map.setZoomLevel(DEFAULT_ZOOM);
-		map.setCenter(DEFAULT_CENTER);
+	public boolean pointinbox( double y , double x ){
+		LatLng coordinate = LatLng.newInstance(y,x);
+		return map.getBounds().containsLatLng(coordinate);
 	}
 
 	/**
@@ -166,10 +141,6 @@ public class MapPanel extends Composite {
 	 * @param height
 	 *            in pixels
 	 */
-	public void resize(int width, int height) {
-		map.checkResizeAndCenter();
-//		map.setSize(width + "px", height + "px");
-	}
 
 	public void rerefesh() {
 		if (moveflag == true) {
@@ -192,14 +163,10 @@ public class MapPanel extends Composite {
 				WUF.locPanel.checkpointinbox();
 			else if( WUF.currentselect == 1 )
 				WUF.favPanel.checkpointinbox();
-			else if( WUF.currentselect == 2 )
-				WUF.errPanel.checkpointinbox();
-			else if( WUF.currentselect == 3 )
-				WUF.whiichPanel.checkpointinbox();
-			
-			//先塞入原本cache項目
+			//先塞入原本cachetable項目
 			DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
 
+			//放入這個格子內原本安排項目
 			List<String> r = null;
 			Geocell eee = new Geocell();
 			r = eee.best_bbox_search_cells(n, ee , s, w);
@@ -212,21 +179,9 @@ public class MapPanel extends Composite {
 			moveflag = true;
 	}
 	
-/*
-	public void AddOverlay( Overlay overlay ) {
-		// map
-		try {
-			map.addOverlay(overlay);
-		} catch (Exception e) {
-		}
-	}
-*/
-	
 	public void AddOverlay(double y, double x, String name, int type) {
-		// map
 		try {
-			//lat 緯度 
-			//lon 經度
+			//lat 緯度      lon 經度
 			LatLng point = LatLng.newInstance(y, x);
 			Marker m = createMarker(point, name, type);
 			_overlays.put( name , m );
@@ -234,13 +189,10 @@ public class MapPanel extends Composite {
 		} catch (Exception e) {
 		}
 	}
-
 	
 	public void RemoveOverlay(String name) {
-		// map
 		try {
-			//lat 緯度 
-			//lon 經度
+			//lat 緯度      lon 經度
 			Overlay m = _overlays.get( name );
 			if( m != null ){
 				map.removeOverlay( m );
@@ -291,4 +243,38 @@ public class MapPanel extends Composite {
 		});
 		return marker;
 	}
+	
+	/**
+	 * Dramatically recenters the map.
+	 */
+/*	
+	protected void recenter() {
+		map.setZoomLevel(DEFAULT_ZOOM);
+		map.setCenter(DEFAULT_CENTER);
+	}
+	
+	public void MoveBound(LatLngBounds bounds) {
+		if (!bounds.isEmpty()) {
+			moveflag = false;
+			int zoom = map.getBoundsZoomLevel(bounds);
+			map.setCenter(bounds.getCenter(), zoom);
+		}
+		return;
+	}
+
+	public void resize(int width, int height) {
+		map.checkResizeAndCenter();
+//		map.setSize(width + "px", height + "px");
+	}
+
+	public void AddOverlay( Overlay overlay ) {
+		// map
+		try {
+			map.addOverlay(overlay);
+		} catch (Exception e) {
+		}
+	}
+
+*/	
+	
 }

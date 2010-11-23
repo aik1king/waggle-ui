@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
 import tw.kayjean.ui.client.Callback;
-import tw.kayjean.ui.client.DataObject;
 import tw.kayjean.ui.client.JSOModel;
 import tw.kayjean.ui.sdk.FBCore;
 import tw.kayjean.ui.sdk.FBXfbml;

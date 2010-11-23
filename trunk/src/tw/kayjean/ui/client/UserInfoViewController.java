@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import tw.kayjean.ui.sdk.FBCore;
 import tw.kayjean.ui.sdk.FBXfbml;
 
+//facebook專用
 public class UserInfoViewController extends Composite {
 	
     private HTML welcomeHtml = new HTML ();
@@ -101,9 +102,7 @@ public class UserInfoViewController extends Composite {
 		HTML json = new HTML ( new JSONObject ( response ).toString() );
 		json.addStyleName("jsonOutput");
 		outer.add ( json );
-		
 	}
-
 
 	/**
 	 * Render publish

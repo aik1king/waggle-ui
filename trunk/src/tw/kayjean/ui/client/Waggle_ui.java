@@ -2,41 +2,16 @@ package tw.kayjean.ui.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.History;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Window;
 
-import tw.kayjean.ui.client.rpc.LocationsService;
-import tw.kayjean.ui.client.rpc.LocationsServiceAsync;
 import tw.kayjean.ui.client.rpc.CoordinateService;
 import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
-import tw.kayjean.ui.client.rpc.TastingService;
-import tw.kayjean.ui.client.rpc.TastingServiceAsync;
 
 import tw.kayjean.ui.sdk.FBCore;
 import tw.kayjean.ui.sdk.FBEvent;
 import tw.kayjean.ui.sdk.FBXfbml;
-import tw.kayjean.ui.client.examples.Example;
-import tw.kayjean.ui.client.examples.FriendsExample;
-import tw.kayjean.ui.client.examples.StreamPublishExample;
-
-import tw.kayjean.ui.shared.FieldVerifier;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -49,9 +24,9 @@ public class Waggle_ui implements EntryPoint {
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
 	 */
-	private static final String SERVER_ERROR = "An error occurred while "
-			+ "attempting to contact the server. Please check your network "
-			+ "connection and try again.";
+//	private static final String SERVER_ERROR = "An error occurred while "
+//			+ "attempting to contact the server. Please check your network "
+//			+ "connection and try again.";
 
 
 	//進入系統後,選擇應用程式設定
@@ -193,16 +168,13 @@ public class Waggle_ui implements EntryPoint {
 	}
 */	
 	
-	public static LocationsServiceAsync locsService;
 	public static CoordinateServiceAsync coordService;
-	public static TastingServiceAsync tastingService;
 	
 	public void onModuleLoad() {
 		
 //		History.addValueChangeHandler ( this );
 		fbCore.init(APPID, status, cookie, xfbml);
-		
-		
+
 		setupRPC();						// Set up the RPC services
 		(new WUF()).initialize();		// Build the UI
 		RootPanel.get("start").setVisible(false); // Get rid of the Please Wait
@@ -227,8 +199,6 @@ public class Waggle_ui implements EntryPoint {
 		SessionChangeCallback sessionChangeCallback = new SessionChangeCallback ();
 		fbEvent.subscribe("auth.sessionChange",sessionChangeCallback);
 
-		
-		
 		//第二組
 		//一開始程式進入,就是來這裡檢查有沒有登入
 		// Callback used when checking login status
@@ -240,15 +210,11 @@ public class Waggle_ui implements EntryPoint {
 		LoginStatusCallback loginStatusCallback = new LoginStatusCallback ();
 		// Get login status
 		fbCore.getLoginStatus( loginStatusCallback );
-		
-		
 	}
-	
+
 	private void setupRPC() {
 		// Create an instance of the asynchronous interface.
-		locsService = (LocationsServiceAsync) GWT.create(LocationsService.class);
 		coordService = (CoordinateServiceAsync) GWT.create(CoordinateService.class);
-		tastingService = (TastingServiceAsync) GWT.create(TastingService.class);
 	}
 
 	//第一組
@@ -291,7 +257,6 @@ public class Waggle_ui implements EntryPoint {
 	private void renderApp ( String token ) {
         renderHomeView ();
 	}
-
 	//facebook http://code.google.com/p/restfb/
 	//http://restfb.com/
 	//
