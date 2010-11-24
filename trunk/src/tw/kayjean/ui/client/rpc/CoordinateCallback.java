@@ -3,7 +3,6 @@ package tw.kayjean.ui.client.rpc;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import tw.kayjean.ui.client.WUF;
 import tw.kayjean.ui.client.model.Node;
 
 public class CoordinateCallback implements AsyncCallback{

@@ -159,10 +159,10 @@ public class MapPanel extends Composite {
 			//順序則是放在這個之後再研究
 			
 			//用目前視窗範圍,送到table,讓table逐一比對,不符合規範的就移除
-			if( WUF.currentselect == 0 )
-				WUF.locPanel.checkpointinbox();
-			else if( WUF.currentselect == 1 )
-				WUF.favPanel.checkpointinbox();
+			if( UserInfoViewController.currentselect == 0 )
+				UserInfoViewController.locPanel.checkpointinbox();
+			else if( UserInfoViewController.currentselect == 1 )
+				UserInfoViewController.favPanel.checkpointinbox();
 			//先塞入原本cachetable項目
 			DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
 
@@ -172,7 +172,7 @@ public class MapPanel extends Composite {
 			r = eee.best_bbox_search_cells(n, ee , s, w);
 			for (int i = 0; i < r.size(); i++) {
 				//每一個方格進行處理
-				DataSwitch.get().getRTree( WUF.username() , r.get(i) , new CoordinateRTreeCallback());
+				DataSwitch.get().getRTree( UserInfoViewController.username() , r.get(i) , new CoordinateRTreeCallback());
 			}
 
 		} else

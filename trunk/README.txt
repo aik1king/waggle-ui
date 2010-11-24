@@ -1,22 +1,51 @@
-
 GWT程式開發程序
 
 首先要確認程式是要在GAE上面執行,還是自己TOMCAT
 因為這會牽涉新開發程式時,選擇開發項目
 
-	共同部分
-	系統會自動產生XXX.gwt.xml ( XXX就是系統名稱 )
-	內容格式固定
-	<entry-point class='tw.kayjean.ui.client.Waggle_ui'/> 這是程式會自動尋找入口entrypoint的地方
-	但是有幾個部份要由使用者增加
-	<inherits name="com.google.gwt.maps.GoogleMaps" /> 專門配合地圖使用
-	<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x&amp;key=ABQIAAAAh7YfkaBHi2ZeQWYxA00oABScZUigKRr9AyP7eqvVhM8r_5oX5BSIQQoDTw2oyYH2x2DWg1bcPMHu1Q" />
-	這組KEY是配合idv使用
-	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 專門配合拖拉使用
-	如果有source需要這樣設定
-	<source path='sdk'/>
+共同部分
+	XXX.gwt.xml
+		系統會自動產生XXX.gwt.xml ( XXX就是系統名稱 )
+		內容格式固定
+		<entry-point class='tw.kayjean.ui.client.Waggle_ui'/> 這是程式會自動尋找入口entrypoint的地方
+		但是有幾個部份要由使用者增加
+		<inherits name="com.google.gwt.maps.GoogleMaps" /> 專門配合地圖使用
+		<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x&amp;key=ABQIAAAAh7YfkaBHi2ZeQWYxA00oABScZUigKRr9AyP7eqvVhM8r_5oX5BSIQQoDTw2oyYH2x2DWg1bcPMHu1Q" />
+		這組KEY是配合idv使用
+		<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 專門配合拖拉使用
+		如果有source需要這樣設定
+		<source path='sdk'/>
+	GWT寫法
+		產生畫面配置
+		private DockPanel mainPanel = new DockPanel ();
+		private SimplePanel mainView = new SimplePanel ();
+		private SimplePanel sideBarView = new SimplePanel ();
+		RootPanel root = RootPanel.get();
+		root.getElement().setId ( "TheApp" );
+		mainView.getElement().setId("MainView");
+		sideBarView.getElement().setId("SideBarView");
+		mainPanel.add( new TopMenuPanel () , DockPanel.NORTH );
+		mainPanel.add ( new TopMenuLinksPanel (), DockPanel.NORTH );
+		mainPanel.add( sideBarView, DockPanel.WEST );
+		mainPanel.add( mainView, DockPanel.CENTER );
+		root.add ( mainPanel );
 
-
+	LINKS寫法
+	    private DockPanel links = new DockPanel ();
+	    private HorizontalPanel leftSide = new HorizontalPanel ();
+	    
+	    Anchor sourceCodeLink = new Anchor ( "Source" );
+	    
+	    public TopMenuLinksPanel () {
+	    	links.getElement().setId("TopMenuLinks");
+	    	sourceCodeLink.setHref("http://code.google.com/p/gwtfb/source/browse/#svn/trunk/GwtFB/src/com/gwtfb/sdk");
+	    	sourceCodeLink.setTarget("blank");
+	    	leftSide.add ( new Hyperlink ( "Home" , "home" ) );
+	    	leftSide.add ( new Hyperlink ( "Documentation", "wave" ) );
+	    	leftSide.add( sourceCodeLink );
+	    	links.add( leftSide, DockPanel.WEST );
+	    	initWidget ( links );
+	    }
 
 自己TOMCAT
 	<web-app>
@@ -41,6 +70,8 @@ GWT程式開發程序
 	</listener>
 
 使用GAE
+
+
 
 
 
