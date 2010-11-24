@@ -3,8 +3,6 @@ package tw.kayjean.ui.client.rpc;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import tw.kayjean.ui.client.WUF;
-
 public class CoordinateSendCallback implements AsyncCallback {
 
 	public void onFailure(final Throwable caught) {
@@ -20,5 +18,4 @@ public class CoordinateSendCallback implements AsyncCallback {
 		Integer r = (Integer) result;
 		return;
 	}
-
 }

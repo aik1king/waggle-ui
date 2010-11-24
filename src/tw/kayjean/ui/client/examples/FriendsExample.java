@@ -34,78 +34,6 @@ import tw.kayjean.ui.sdk.objects.Post;
 public class FriendsExample extends Example {
 
     private HashMap<String,String> suggestionWorkaround = new HashMap<String,String> ();
-    
-    /*
-     * Decide what to render in response
-     */
-    enum Ui { INPUT, JSON, FEED };
-
-
-    /*
-     * Generic callback class
-     */
-    class FacebookCallback extends Callback<JavaScriptObject> {
-        
-   
-        private String path;
-        private Ui ui;
-        private VerticalPanel result;
-        
-        public FacebookCallback ( String path, Ui ui, VerticalPanel result ) {
-            this.path = path;
-            this.ui = ui;
-            this.result = result;
-        }
-
-        public void onSuccess ( JavaScriptObject response ) {
-            
-            switch ( ui )
-            {
-                case INPUT :
-                    renderSuggestBox ( response );
-                    break;
-                    
-                case JSON :
-                    result.add( new HTML ( new JSONObject ( response ).toString() ) );
-                    break;
-                    
-                case FEED : 
-                    renderFeed ( response, result );
-                    break;
-                
-            }
-            if ( ui == Ui.INPUT ) {
-                renderSuggestBox ( response );
-            }
-        }
-    }
-
-    // Private fields
-    private VerticalPanel mainPanel = new VerticalPanel ();
-    private SimplePanel suggestPanel = new SimplePanel ();
-    private VerticalPanel content = new VerticalPanel ();
-    private FBCore fbCore;
-    
-
-    public FriendsExample ( FBCore fbCore ) {
-        
-        this.fbCore = fbCore;
-
-        /*
-         * Display number of friends
-         */
-        suggestPanel.add( new HTML ( "Getting friend list..." ) );
-        fbCore.api ( "/me/friends", new FacebookCallback ( "/me/friends", Ui.INPUT, null ) );
-        
-        mainPanel.add ( suggestPanel );
-        mainPanel.add ( content );
-        initWidget ( mainPanel );
-    }
-    
-    private void handleError ( JavaScriptObject response )
-    {
-        Window.alert ( "Handle error ");
-    }
 
     /*
      * Render suggesbox to let user choose a friend
@@ -151,6 +79,28 @@ public class FriendsExample extends Example {
         suggestPanel.add (panel);
     }
 
+    private void handleError ( JavaScriptObject response )
+    {
+        Window.alert ( "Handle error ");
+    }
+    
+    
+    /**
+     * Loop all methods that is accessible to users.
+     */
+    private void doGetFriendData ( Long id ) {
+
+        renderMethod ( id, "feed", Ui.FEED );
+        
+        
+        String [] methods = { "albums", "friends", "home", "likes", "movies", "books", 
+                              "notes", "photos", "videos", "events", "groups" }; 
+        
+        for ( String method : methods ) {
+            renderMethod(id, method, Ui.JSON );
+        }
+    }
+
     /**
      * Render user posts
      */
@@ -188,35 +138,7 @@ public class FriendsExample extends Example {
             Window.alert ( "Could not render response: " + e.getMessage() );
         }
     }
- 
-    /**
-     * Clear previous data
-     */
-    private void clear () {
-        content.clear();
-    }
     
-    private void displaySelectedName ( String name ) {
-        
-        content.add ( new HTML ( "<h1>" + name + "</h1>" ) );
-    }
-    
-    /**
-     * Loop all methods that is accessible to users.
-     */
-    private void doGetFriendData ( Long id ) {
-
-        renderMethod ( id, "feed", Ui.FEED );
-        
-        
-        String [] methods = { "albums", "friends", "home", "likes", "movies", "books", 
-                              "notes", "photos", "videos", "events", "groups" }; 
-        
-        for ( String method : methods ) {
-            renderMethod(id, method, Ui.JSON );
-        }
-    }
-
     private void renderMethod(final Long userId, String method, final Ui render) {
         String fields = null;
         
@@ -254,6 +176,79 @@ public class FriendsExample extends Example {
 
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    // Private fields
+    private VerticalPanel mainPanel = new VerticalPanel ();
+    
+    /**
+     * Clear previous data
+     */
+    private void clear () {
+        content.clear();
+    }
+    
+    private void displaySelectedName ( String name ) {
+        
+        content.add ( new HTML ( "<h1>" + name + "</h1>" ) );
+    }
+    
+    /*
+     * Decide what to render in response
+     */
+    enum Ui { INPUT, JSON, FEED };
+    
+    
+    /*
+     * Generic callback class
+     */
+    class FacebookCallback extends Callback<JavaScriptObject> {
+        
+   
+        private String path;
+        private Ui ui;
+        private VerticalPanel result;
+        
+        public FacebookCallback ( String path, Ui ui, VerticalPanel result ) {
+            this.path = path;
+            this.ui = ui;
+            this.result = result;
+        }
+
+        public void onSuccess ( JavaScriptObject response ) {
+            
+            switch ( ui )
+            {
+                case INPUT :
+                    renderSuggestBox ( response );
+                    break;
+                    
+                case JSON :
+                    result.add( new HTML ( new JSONObject ( response ).toString() ) );
+                    break;
+                    
+                case FEED : 
+                    renderFeed ( response, result );
+                    break;
+                
+            }
+            if ( ui == Ui.INPUT ) {
+                renderSuggestBox ( response );
+            }
+        }
+    }
+    
     /**
      * Display method
      */
@@ -261,13 +256,31 @@ public class FriendsExample extends Example {
     public String getMethod() {
         return "fbCore.api ( '/me/friends' .. )";
     }
-
+    
     /**
      * Get simple name of class 
      */
     @Override
     public String getSimpleName() {
         return "FriendsExample";
+    }
+    
+    private SimplePanel suggestPanel = new SimplePanel ();
+    private FBCore fbCore;
+    private VerticalPanel content = new VerticalPanel ();
+    public FriendsExample ( FBCore fbCore ) {
+        
+        this.fbCore = fbCore;
+
+        /*
+         * Display number of friends
+         */
+        suggestPanel.add( new HTML ( "Getting friend list..." ) );
+        fbCore.api ( "/me/friends", new FacebookCallback ( "/me/friends", Ui.INPUT, null ) );
+        
+        mainPanel.add ( suggestPanel );
+        mainPanel.add ( content );
+        initWidget ( mainPanel );
     }
     
  }

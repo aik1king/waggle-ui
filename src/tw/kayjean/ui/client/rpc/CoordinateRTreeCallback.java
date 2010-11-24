@@ -16,7 +16,7 @@ import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.geom.LatLng;
 
 
-import tw.kayjean.ui.client.WUF;
+import tw.kayjean.ui.client.UserInfoViewController;
 import tw.kayjean.ui.client.model.Node;
 
 public class CoordinateRTreeCallback implements AsyncCallback{
@@ -47,14 +47,14 @@ public class CoordinateRTreeCallback implements AsyncCallback{
 		for (Iterator locIter = avgNodes.iterator(); locIter.hasNext();) {
 			Node avgNode = (Node) locIter.next();
 			
-			if( WUF.mPanel.pointinbox(avgNode.y, avgNode.x) == true ){
+			if( UserInfoViewController.mPanel.pointinbox(avgNode.y, avgNode.x) == true ){
 				//如果節點屬於目前視窗範圍,才要加入,不然不需要加入
 				
 				//加入時候,應該依照數值進行排序,分數高的放上面
 				if( avgNode.type == 0 )
-					WUF.locPanel.addLocation(avgNode);
+					UserInfoViewController.locPanel.addLocation(avgNode);
 				else if( avgNode.type == 1 )
-					WUF.favPanel.addFavorite(avgNode);
+					UserInfoViewController.favPanel.addFavorite(avgNode);
 /*				
 				else if( avgNode.type == 2 )
 					WUF.errPanel.addError(avgNode);
