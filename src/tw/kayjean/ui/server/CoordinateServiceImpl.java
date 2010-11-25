@@ -1,19 +1,9 @@
 package tw.kayjean.ui.server;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.Vector;
-import java.util.TimeZone;
-import java.io.FileReader;
-import java.io.FileWriter;
 
 import javax.servlet.ServletException;
 
@@ -34,6 +24,8 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import com.thoughtworks.xstream.XStream;
 
+import tw.kayjean.ui.client.model.FBDetail;
+import tw.kayjean.ui.client.model.FBFriends;
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.model.Poi;
 import tw.kayjean.ui.client.rpc.CoordinateService;
@@ -60,19 +52,16 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	S3Service s3Service = null;
 	S3Bucket testBucket1 = null;
 	S3Bucket testBucket2 = null;
-	S3Bucket testBucket3 = null;
 	S3Bucket testBucket4 = null;
-	
-//	MemCache mcache = new MemCache();
 	
 	public boolean preparedb( String dbname ) {
 		if (sds == null) {
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
                 //sds = SamplesUtils.loadASWDB();
-				sds = new SimpleDB("" , "" , false);
+				sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);
                 sds.setSignatureVersion(1);
-                
+
                 /*
                 ListDomainsResult result = sds.listDomains(); 
                 List<Domain> domains = result.getDomainList(); 
@@ -94,16 +83,14 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			}
 		}
 
-		if( testBucket1 == null || testBucket2 == null || testBucket3 == null || testBucket4 == null ){
+		if( testBucket1 == null || testBucket2 == null || testBucket4 == null ){
 			try {
-				AWSCredentials awsCredentials = new AWSCredentials("" , "");
+				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
 				s3Service = new RestS3Service(awsCredentials);
 				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
-				//儲存暫時性個人資料..這個方法怪怪的,不過暫時有效
+				//儲存個人資料..這個方法怪怪的,不過暫時有效
 				testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
-				//儲存長期間個人資料.
-				testBucket3 = s3Service.getOrCreateBucket("xmluserdata-kayjean");
 				//景點詳細資料
 				testBucket4 = s3Service.getOrCreateBucket("upload-kayjean");
 			}
@@ -111,184 +98,179 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 				System.out.println( e.toString() );
 			}
 		}
-
 		return true;
 	}
 
-	//可以開始選擇項目
-	//感受系統問題
-	//主要目的是
-	//1.找出並且列出所有地方
-	//2.使用者可以用不同ranking紀錄曾經去過的項目
-	//3.推薦可以去的地方(包括顯示詳細資料)
-	public List getRTree( String username , String name ) {
-		
-		System.out.println("CoordinateServiceImpl getRTree");
-		
-		ArrayList avgNodes = new ArrayList();
+	// 可以開始選擇項目
+	// 感受系統問題
+	// 主要目的是
+	// 1.找出並且列出所有地方
+	// 2.使用者可以用不同ranking紀錄曾經去過的項目
+	// 3.推薦可以去的地方(包括顯示詳細資料)
+	public List getRTree(String username, String name) {
+		System.out.println("CoordinateServiceImpl getRTree " + username
+				+ " and " + name);
+		ArrayList retNodes = new ArrayList();
 		XStream xstream = new XStream();
-		//讀取一般資料
 		boolean awsexist = false;
 		S3Object objectComplete2 = null;
-        try {
-        	objectComplete2 = s3Service.getObject(testBucket1, name);
-        	awsexist = true;
-        } catch ( Exception e) {
-        }
-        if( awsexist == false ){
-	    	
-			Node avgNode = new Node();
-			avgNode.name = "thisis1";
-			avgNode.x = 121.0;
-			avgNode.y = 24.5;
-			avgNode.type = 0;
-			avgNodes.add(avgNode);
-			
-			//依照名稱到 s3中尋找需要檔案
-			//如果有就將資料填入,並且返回
-			//如果沒有就送入message queue
-			//或是直接到db中查詢,查詢結果製作成檔案並且回傳
-			
-			//先直接查詢db
-	
-			if( dom == null ){
-				System.out.println( "error" );
+
+		// 基本地圖功能
+		try {
+			objectComplete2 = s3Service.getObject(testBucket1, name);
+			awsexist = true;
+		} catch (Exception e) {
+		}
+
+		if (awsexist == false) {
+
+			if (dom == null) {
+				System.out.println("error very important");
+			} else {
+				String qattr = "l" + Integer.toString(name.length());
+				String line = "select * from poi where " + qattr + " = \""
+						+ name
+						+ "\" and rank is not null order by rank desc limit 10";
+				int itemCount = 0;
+				long start = System.currentTimeMillis();
+				String nextToken = null;
+				try {
+					do {
+						QueryWithAttributesResult qwar = dom.selectItems(line,
+								nextToken);
+						Map<String, List<ItemAttribute>> items = qwar
+								.getItems();
+						for (String id : items.keySet()) {
+							System.out.println("Item : " + id);
+							Node n = new Node();
+							n.fullname = id;
+							n.type = 0;
+							for (ItemAttribute attr : items.get(id)) {
+								if (attr.getName().equalsIgnoreCase("lon"))
+									n.x = Double.parseDouble(attr
+											.getValue());
+								else if (attr.getName().equalsIgnoreCase("lat"))
+									n.y = Double.parseDouble(attr
+											.getValue());
+								else if (attr.getName().equalsIgnoreCase(
+										"targetname"))
+									n.name = attr.getValue();
+								else if (attr.getName().equalsIgnoreCase("l10"))
+									n.geocell = attr.getValue();
+								else if (attr.getName()
+										.equalsIgnoreCase("rank"))
+									n.rank = Integer.parseInt(attr
+											.getValue());
+							}
+							itemCount++;
+							retNodes.add(n);
+						}
+						nextToken = qwar.getNextToken();
+						System.out.println("Box Usage :" + qwar.getBoxUsage());
+					} while (nextToken != null && !nextToken.trim().equals("")
+							&& itemCount < 10);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+				long end = System.currentTimeMillis();
+				System.out.println("Time : " + ((int) (end - start) / 1000.0));
+				System.out.println("Number of items returned : " + itemCount);
 			}
-			else{
-			String qattr = "l" + Integer.toString(name.length());
-	
-			String line = "select * from poi where " + qattr + " = \"" + name + "\" and rank is not null order by rank desc limit 10";
-	        int itemCount = 0;
-	        long start = System.currentTimeMillis(); 
-	        String nextToken = null;
-	        try{
-	            do {
-	                QueryWithAttributesResult qwar = dom.selectItems(line, nextToken);
-	                Map<String, List<ItemAttribute>> items = qwar.getItems();
-	                for (String id : items.keySet()) { 
-	                	System.out.println("Item : "+id);
-	
-	            		Node avgNode2 = new Node();
-	            		
-	            		avgNode2.fullname = id;
-	            		avgNode2.type = 0;
-	                    for (ItemAttribute attr : items.get(id)) {
-	                        //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
-	                    	if( attr.getName().equalsIgnoreCase("lon") )
-	                    		avgNode2.x = Double.parseDouble(attr.getValue());
-	                    	else if( attr.getName().equalsIgnoreCase("lat") )
-	                    		avgNode2.y = Double.parseDouble(attr.getValue());
-	                    	else if( attr.getName().equalsIgnoreCase("targetname") )
-	                    		avgNode2.name = attr.getValue();
-	                    	else if( attr.getName().equalsIgnoreCase("l10") )
-	                    		avgNode2.geocell = attr.getValue();
-	                    	else if( attr.getName().equalsIgnoreCase("rank") )
-	                    		avgNode2.rank = Integer.parseInt(attr.getValue());
-	                    }
-	                    itemCount++;
-	            		avgNodes.add(avgNode2);
-	                } 
-	                nextToken = qwar.getNextToken(); 
-	                System.out.println("Box Usage :"+qwar.getBoxUsage()); 
-	            } while (nextToken != null && !nextToken.trim().equals("") && itemCount < 10 ); 
-	        }
-	        catch(Exception e){
-	        	System.out.println( e);
-	        }
-	        long end = System.currentTimeMillis(); 
-	        System.out.println("Time : "+((int)(end-start)/1000.0)); 
-	        System.out.println("Number of items returned : "+itemCount); 
-			}
-			
-			try{
-				//將東西變成一個XML
-				String s = xstream.toXML(avgNodes);
-				//將XML存進S3裡面
-				S3Object stringObject = new S3Object( name , s );
+
+			try {
+				// 將東西變成一個XML
+				String s = xstream.toXML(retNodes);
+				// 將XML存進S3裡面
+				S3Object stringObject = new S3Object(name, s);
 				s3Service.putObject(testBucket1, stringObject);
+			} catch (Exception e) {
+				System.out.println(e);
 			}
-			catch(Exception e ){
-				System.out.println( e );
+		} else {
+			// 使用上次內容
+			try {
+				retNodes.addAll((List<Node>) xstream.fromXML(ServiceUtils
+						.readInputStreamToString(objectComplete2
+								.getDataInputStream(), "UTF-8")));
+			} catch (Exception e) {
+				System.out.println(e);
 			}
-        }
-        else
-        {
-        	//使用上次內容
-        	try{
-        		avgNodes.addAll( (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") ) );
+		}
+
+		// 讀取client相關資料
+		if (username != null && !username.equalsIgnoreCase("")) {
+
+			List<Node> l = MemCache.getcache(username);
+			if (l == null) {
+				// 讀取區域檔案,存入cache
+				awsexist = false;
+				try {
+					objectComplete2 = s3Service
+							.getObject(testBucket2, username);
+					awsexist = true;
+				} catch (Exception e) {
+				}
+				if (awsexist == true) {
+					//舊使用者
+					try {
+						l = (List<Node>) xstream.fromXML(ServiceUtils
+								.readInputStreamToString(objectComplete2
+										.getDataInputStream(), "UTF-8"));
+						MemCache.addcache(username, l);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
+				else{
+					//新使用者
+					//就算沒有原本設定,還是要產生一個MemCache資料,避免之後每次都要讀取S3
+					ArrayList retNodes2 = new ArrayList();
+					MemCache.addcache(username, retNodes2);
+				}
 			}
-			catch(Exception e ){
-				System.out.println( e );
+			
+			//當作沒有處理過,重新來過
+			l = MemCache.getcache(username);
+
+			if (l != null && l.size() > 0 ) {
+				for (int i = 0; i < l.size(); i++) {
+					Node n = l.get(i);
+					if (n.geocell != null && n.geocell.startsWith(name)) {
+						// 準備加入,但最好可以簡化
+						// Collections.sort
+						for (int j = retNodes.size() - 1; j >= 0; j--) {
+							Node n2 = (Node) retNodes.get(j);
+							if (n2.name.equalsIgnoreCase(n.name)) {
+								// 移除地圖,保留個人設定
+								retNodes.remove(j);
+								break;
+							}
+						}
+						retNodes.add(n);
+					}
+				}
 			}
-        }
-        
-		//讀取client相關資料
-        if( username != null && !username.equalsIgnoreCase("" ) ){
-        	
-        	List<Node> l =MemCache.getcache(username); 
-        	if( l == null ){
-        		//讀取暫時區域檔案,存入cache
-        		awsexist = false;
-    	        try {
-    	        	objectComplete2 = s3Service.getObject(testBucket2, username );
-    	        	awsexist = true;
-    	        } catch ( Exception e) {
-    	        }
-    	        if( awsexist == true )
-    	        {
-    	        	try{
-    	        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
-    	        		MemCache.addcache(username , l);
-    				}
-    				catch(Exception e ){
-    					System.out.println( e );
-    				}
-    	        }
-    	        
-        		//讀取長期區域檔案,存入cache
-        		awsexist = false;
-    	        try {
-    	        	objectComplete2 = s3Service.getObject(testBucket3, username );
-    	        	awsexist = true;
-    	        } catch ( Exception e) {
-    	        }
-    	        if( awsexist == true )
-    	        {
-    	        	try{
-    	        		l = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
-    	        		MemCache.addcache(username , l);
-    				}
-    				catch(Exception e ){
-    					System.out.println( e );
-    				}
-    	        }
-        	}
-        	
-        	l =MemCache.getcache(username);
-        	
-        	if( l != null ){
-        		for( int i = 0 ; i < l.size() ; i++ ){
-        			Node n = l.get(i);
-//        			double t = n.x;
-//        			n.x = n.y;
-//        			n.y = t;
-        			if( n.geocell.startsWith(name)){
-        				//準備加入,但最好可以簡化
-        				//Collections.sort
-        				for( int j = avgNodes.size() -1  ; j >= 0  ; j-- ){
-        					Node n2 = (Node)avgNodes.get(j);
-        					if( n2.name.equalsIgnoreCase(n.name )){
-        						//移除地圖,保留個人設定
-        						avgNodes.remove(j);
-        						break;
-        					}
-        				}
-        				avgNodes.add(n);
-        			}
-        		}
+		}
+		return retNodes;
+	}
+
+	public Integer sendNode(String username, int type, Node n) {
+		n.type = type;
+
+		// 1 我提供給別人
+		// 2 別人提供給我
+		if (type == 1 || type == 2 ) {
+			// 寫入興趣點透過memorycache
+			List<Node> l = MemCache.getcache(username);
+			if (l == null || l.size() == 0 ) {
+				ArrayList retNodes = new ArrayList();
+				retNodes.add(n);
+				MemCache.addcache(username, retNodes);
+			} else {
+				MemCache.addcacheitem(username, n);
 			}
-        }
-		return avgNodes;
+		}
+		return 1;
 	}
 
 	public Poi getNode(String s){
@@ -316,54 +298,70 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		return null;
 	}
 	
-	public List getLocations(String name, int limit){
-		//輸入一些文字,找出適當內容
-		ArrayList avgNodes = new ArrayList();
-
-		if( dom == null ){
-			System.out.println( "error" );
+	
+	public List sendDetail(FBDetail fd , FBFriends ffs) {
+		boolean awsexist = false;
+		S3Object objectComplete2 = null;
+		XStream xstream = new XStream();
+		//建立個人基本資料 id_d
+		try {
+			objectComplete2 = s3Service
+					.getObject(testBucket2, fd.id + "_d" );
+			awsexist = true;
+		} catch (Exception e) {
+		}
+		if (awsexist == true) {
+			//舊使用者
+			//先不處理
+/*			
+			try {
+				l = (List<Node>) xstream.fromXML(ServiceUtils
+						.readInputStreamToString(objectComplete2
+								.getDataInputStream(), "UTF-8"));
+				MemCache.addcache(username, l);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+*/			
 		}
 		else{
-		String qattr = "k" + Integer.toString(name.length());
-
-		String line = "select * from poi where " + qattr + " = \"" + name + "\" and rank is not null order by rank desc limit 10";
-        int itemCount = 0;
-        long start = System.currentTimeMillis(); 
-        String nextToken = null;
-        try{
-            do {
-                QueryWithAttributesResult qwar = dom.selectItems(line, nextToken);
-                Map<String, List<ItemAttribute>> items = qwar.getItems();
-                for (String id : items.keySet()) { 
-                	System.out.println("Item : "+id);
-
-            		Node avgNode2 = new Node();
-            		
-                    for (ItemAttribute attr : items.get(id)) {
-                        //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
-                    	if( attr.getName().equalsIgnoreCase("lon") )
-                    		avgNode2.x = Double.parseDouble(attr.getValue());
-                    	else if( attr.getName().equalsIgnoreCase("lat") )
-                    		avgNode2.y = Double.parseDouble(attr.getValue());
-                    	else if( attr.getName().equalsIgnoreCase("targetname") )
-                    		avgNode2.name = attr.getValue();
-                    } 
-                    itemCount++;
-            		avgNodes.add(avgNode2);
-                } 
-                nextToken = qwar.getNextToken(); 
-                System.out.println("Box Usage :"+qwar.getBoxUsage()); 
-            } while (nextToken != null && !nextToken.trim().equals("") && itemCount < 10 ); 
-        }
-        catch(Exception e){
-        	System.out.println( e);
-        }
-        long end = System.currentTimeMillis(); 
-        System.out.println("Time : "+((int)(end-start)/1000.0)); 
-        System.out.println("Number of items returned : "+itemCount); 
+			//新使用者
+			try {
+				// 將東西變成一個XML
+				String s = xstream.toXML(fd);
+				//將XML存進S3裡面
+				S3Object stringObject = new S3Object(fd.id + "_d", s);
+				s3Service.putObject(testBucket2, stringObject);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
 		}
-		
-		return avgNodes;
+		//建立朋友資料 id_f
+		awsexist = false;
+		try {
+			objectComplete2 = s3Service
+					.getObject(testBucket2, fd.id + "_f" );
+			awsexist = true;
+		} catch (Exception e) {
+		}
+		if (awsexist == true) {
+			//舊使用者
+			//先不處理
+		}
+		else{
+			//新使用者
+			try {
+				// 將東西變成一個XML
+				String s = xstream.toXML(ffs);
+				//將XML存進S3裡面
+				S3Object stringObject = new S3Object(fd.id + "_f", s);
+				s3Service.putObject(testBucket2, stringObject);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+		//回傳已經朋友資料
+		return null;
 	}
 	
 	static double ip2number(String ip) {
@@ -385,68 +383,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		}
 		return x1 + x2 + x3 + x4;
 	}
-	
-	public Integer sendNode( String username , int type , Node n ){
-		n.type = type;
-		
-		if( type == 1 || type == 2 || type == 3 ){
-			//寫入興趣點透過memorycache
-        	List<Node> l =MemCache.getcache(username); 
-        	if( l == null ){
-				ArrayList avgNodes = new ArrayList();
-				avgNodes.add(n);
-				MemCache.addcache(username, avgNodes );
-        	}
-        	else{
-        		MemCache.addcacheitem(username , n);
-        	}
 
-			//寫入興趣點透過檔案
-			XStream xstream = new XStream();
-			boolean awsexist = false;
-			S3Object objectComplete2 = null;
-	        try {
-	        	objectComplete2 = s3Service.getObject(testBucket2, username);
-	        	awsexist = true;
-	        } catch ( Exception e) {
-	        }
-	        if( awsexist == false ){
-				try{
-					ArrayList avgNodes = new ArrayList();
-					avgNodes.add(n);
-					
-					//將東西變成一個XML
-					String s = xstream.toXML(avgNodes);
-					//將XML存進S3裡面
-					S3Object stringObject = new S3Object( username , s );
-					s3Service.putObject(testBucket2, stringObject);
-				}
-				catch(Exception e ){
-					System.out.println( e );
-				}
-	        }
-	        else
-	        {
-	        	//使用上次內容
-	        	try{
-	        		List<Node> avgNodes = null;
-	        		avgNodes = (List<Node>)xstream.fromXML( ServiceUtils.readInputStreamToString(objectComplete2.getDataInputStream(), "UTF-8") );
-	        		avgNodes.add( n );
-	        		
-					//將東西變成一個XML
-					String s = xstream.toXML(avgNodes);
-					//將XML存進S3裡面
-					S3Object stringObject = new S3Object( username , s );
-					s3Service.putObject(testBucket2, stringObject);
-				}
-				catch(Exception e ){
-					System.out.println( e );
-				}
-	        }
-		}
-		return 1;
-	}
-	
 	public String getIPLocation() {
 		//照理說會回傳經緯度,移動到類似地點
 
@@ -496,5 +433,57 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 */
 		return "";
 	}
+
+/*	
+	public List getLocations(String name, int limit){
+		//輸入一些文字,找出適當內容
+		ArrayList avgNodes = new ArrayList();
+
+		if( dom == null ){
+			System.out.println( "error" );
+		}
+		else{
+		String qattr = "k" + Integer.toString(name.length());
+
+		String line = "select * from poi where " + qattr + " = \"" + name + "\" and rank is not null order by rank desc limit 10";
+        int itemCount = 0;
+        long start = System.currentTimeMillis(); 
+        String nextToken = null;
+        try{
+            do {
+                QueryWithAttributesResult qwar = dom.selectItems(line, nextToken);
+                Map<String, List<ItemAttribute>> items = qwar.getItems();
+                for (String id : items.keySet()) { 
+                	System.out.println("Item : "+id);
+
+            		Node avgNode2 = new Node();
+            		
+                    for (ItemAttribute attr : items.get(id)) {
+                        //System.out.println("  "+attr.getName()+" = "+filter(attr.getValue()));
+                    	if( attr.getName().equalsIgnoreCase("lon") )
+                    		avgNode2.x = Double.parseDouble(attr.getValue());
+                    	else if( attr.getName().equalsIgnoreCase("lat") )
+                    		avgNode2.y = Double.parseDouble(attr.getValue());
+                    	else if( attr.getName().equalsIgnoreCase("targetname") )
+                    		avgNode2.name = attr.getValue();
+                    } 
+                    itemCount++;
+            		avgNodes.add(avgNode2);
+                } 
+                nextToken = qwar.getNextToken(); 
+                System.out.println("Box Usage :"+qwar.getBoxUsage()); 
+            } while (nextToken != null && !nextToken.trim().equals("") && itemCount < 10 ); 
+        }
+        catch(Exception e){
+        	System.out.println( e);
+        }
+        long end = System.currentTimeMillis(); 
+        System.out.println("Time : "+((int)(end-start)/1000.0)); 
+        System.out.println("Number of items returned : "+itemCount); 
+		}
+		
+		return avgNodes;
+	}
+*/
 	
 }

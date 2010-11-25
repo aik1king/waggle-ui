@@ -52,9 +52,9 @@ public class FavoritePanel extends Composite {
         LocationEntry tmpEntry;
         for (int i = routeFlow.size() - 1 ; i >= 0 ; i--) {
             tmpEntry = routeFlow.getEntry(i);
-            if( !UserInfoViewController.mPanel.pointinbox(tmpEntry.n.y, tmpEntry.n.x) ){
+            if( !WUF.mPanel.pointinbox(tmpEntry.n.y, tmpEntry.n.x) ){
             	routeFlow.remove(tmpEntry);
-            	UserInfoViewController.mPanel.RemoveOverlay( tmpEntry.n.name );
+            	WUF.mPanel.RemoveOverlay( tmpEntry.n.name );
             }
         }
     	return;
@@ -69,8 +69,8 @@ public class FavoritePanel extends Composite {
             LocationEntry newloc = new LocationEntry( n.name , n.fullname , n.x , n.y , 1 , n.geocell );
             routeFlow.add(newloc); // Add to display
             //加入地圖的點
-            if( UserInfoViewController.currentselect == 1 )
-            	UserInfoViewController.mPanel.AddOverlay(n.y, n.x, n.name , 1 );
+            if( WUF.currentselect == 1 )
+            	WUF.mPanel.AddOverlay(n.y, n.x, n.name , 1 );
             open();
     	}
     }

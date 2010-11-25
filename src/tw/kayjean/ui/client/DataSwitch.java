@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import tw.kayjean.ui.client.model.FBDetail;
+import tw.kayjean.ui.client.model.FBFriends;
 import tw.kayjean.ui.client.model.Node;
 import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
 
@@ -37,7 +39,10 @@ public class DataSwitch implements CoordinateServiceAsync {
 
 		  }
 
-	  //景點詳細內容
+	  //景點詳細內容,其實根本沒有透過DataSwitch
+	  public void sendDetail ( FBDetail fd , FBFriends ffs , final AsyncCallback cb ){
+		  
+	  }
 	public void getNode(String s, final AsyncCallback cb) {
 
 		//內容不需要cache,直接redirect向server取得

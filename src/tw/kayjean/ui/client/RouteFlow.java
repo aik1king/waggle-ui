@@ -207,7 +207,7 @@ public class RouteFlow extends Composite {
         public void onDrop(DragContext context) {
             super.onDrop(context);
             //就是放在垃圾桶就是了
-            UserInfoViewController.favoriteLocation( (LocationEntry)(context.draggable));
+            WUF.favoriteLocation( (LocationEntry)(context.draggable));
         }
 
         public void onEnter(DragContext context) {

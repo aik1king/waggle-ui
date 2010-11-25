@@ -2,7 +2,7 @@ package tw.kayjean.ui.sdk.objects;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class Paging  extends JavaScriptObject {
+public class Paging extends JavaScriptObject {
     
     protected Paging() {}
     

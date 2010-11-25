@@ -3,7 +3,7 @@ package tw.kayjean.ui.client.rpc;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import tw.kayjean.ui.client.UserInfoViewController;
+import tw.kayjean.ui.client.WUF;
 
 public class CoordinateIPLocation implements AsyncCallback {
 
@@ -21,17 +21,16 @@ public class CoordinateIPLocation implements AsyncCallback {
 		if( address.equalsIgnoreCase("") )
 			return;
 		
-		UserInfoViewController.mPanel.Clear();
+		WUF.mPanel.Clear();
 		//Hsinchu-24.8047-120.9714
 		String items[] = address.split("-");
 		try{
 		double y = Double.parseDouble(items[1]);
 		double x = Double.parseDouble(items[2]);
-		UserInfoViewController.mPanel.Move( y, x , 10 );
+		WUF.mPanel.Move( y, x , 10 );
 		}
 		catch( Exception e ){
 		}
 		return;
 	}
-
 }
