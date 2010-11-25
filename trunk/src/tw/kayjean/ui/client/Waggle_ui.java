@@ -9,6 +9,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import tw.kayjean.ui.client.rpc.CoordinateService;
 import tw.kayjean.ui.client.rpc.CoordinateServiceAsync;
@@ -17,6 +18,8 @@ import tw.kayjean.ui.sdk.FBCore;
 import tw.kayjean.ui.sdk.FBEvent;
 import tw.kayjean.ui.sdk.FBXfbml;
 
+import tw.kayjean.ui.client.model.FBDetail;
+import tw.kayjean.ui.client.model.FBFriends;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -61,9 +64,11 @@ public class Waggle_ui implements EntryPoint, ValueChangeHandler<String>  {
 	private boolean cookie = true;
 
 	private DockPanel mainPanel = new DockPanel ();
-	private SimplePanel mainView = new SimplePanel ();
+	private VerticalPanel mainView = new VerticalPanel ();
 
 	public static CoordinateServiceAsync coordService;
+	public static FBDetail username;
+	public static FBFriends friends;
 	
 	public void onModuleLoad() {
 		
@@ -122,22 +127,24 @@ public class Waggle_ui implements EntryPoint, ValueChangeHandler<String>  {
 	 * Render GUI when logged in
 	 */
 	private void renderWhenLoggedIn () {
-		mainView.setWidget ( new UserInfoViewController ( fbCore ) );
+		mainView.clear();
+		mainView.add( new UserInfoViewController ( fbCore ) );
 		//目前被修改成
 		//要達到目標是,顯示地圖項目,可以開始運作了
-
 //		(new WUF()).initialize();		// Build the UI
 //		RootPanel.get("start").setVisible(false); // Get rid of the Please Wait
-		
 //		WUF.test2( new UserInfoViewController ( fbCore ) );
 		fbXfbml.parse();
+//		mainView.setWidget ( new WUF() );
+		mainView.add( new WUF() );
 	}
 	
 	/**
 	 * Render GUI when not logged in
 	 */
 	private void renderWhenNotLoggedIn () {
-		mainView.setWidget ( new FrontpageViewController () );
+		mainView.clear();
+		mainView.add ( new FrontpageViewController () );
 		//目前被修改成
 		//要達到目標是,完全不出現地圖畫面,只出現一些評論還有等待登入
 //		WUF.test2( new FrontpageViewController () );
@@ -171,50 +178,13 @@ public class Waggle_ui implements EntryPoint, ValueChangeHandler<String>  {
 	    }
         if ( token.endsWith("home") ) {
             renderHomeView ();
-        } else if ( token.startsWith("example" ) ) {
-/*            
- * 很奇怪,應該沒有任何部份會跑到這邊來
-            //Wrap example, display sourcecode link etc.
-            String example = token.split("/")[1];
-            
-            Example e = null;
-            if ( "stream.publish".equals ( example ) ) {
-                e = new StreamPublishExample ( fbCore );
-            } else if ( "friends".equals ( example ) ) {
-                e = new FriendsExample ( fbCore );
-            }
-            
-            VerticalPanel examplePanel = new VerticalPanel ();
-            examplePanel.setWidth ( "700px" );
-            examplePanel.getElement().setId("ExampleView");
-            
-            HorizontalPanel headerPanel = new HorizontalPanel ();
-            headerPanel.addStyleName( "header" );
-            headerPanel.add ( new HTML ( "Method: " + e.getMethod() ) );
-
-            Anchor sourceLink = new Anchor ( "Source" );
-            sourceLink.addStyleName("sourceLink");
-            sourceLink.setTarget( "blank");
-            sourceLink.setHref("http://code.google.com/p/albumupload/source/browse/trunk/albumupload/src/com/albumupload/client/examples/" + e.getSimpleName() + ".java" );
-             headerPanel.add ( sourceLink ); 
-            examplePanel.add( headerPanel );
-            
-            examplePanel.addStyleName ( "example" );
-            e.addStyleName( "example" );
-            examplePanel.add ( e );
-            // Add example
-            mainView.setWidget( examplePanel );
-*/
         } else {
             Window.alert ( "Unknown  url "  + token );
         }
 	}
-
 	
 	//系統基礎
     public void onValueChange(ValueChangeEvent<String> event) {
         renderApp ( event.getValue() );
     }
-	
 }
-

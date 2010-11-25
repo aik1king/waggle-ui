@@ -15,8 +15,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Composite;
 
 import tw.kayjean.ui.client.rpc.CoordinateSendCallback;
-import tw.kayjean.ui.client.examples.Example;
-import tw.kayjean.ui.client.examples.FriendsExample;
 
 /**
  * The WaggleUIFrame which holds all our Panels (and thus, virtually
@@ -24,7 +22,7 @@ import tw.kayjean.ui.client.examples.FriendsExample;
  * access the actual classes statically. You can also use the utility methods
  * here to notify users of stuff.
  */
-public class WUF extends DockPanel{
+public class WUF extends Composite{
 
 	private static final Label messagePanel = new Label();
 
@@ -33,38 +31,35 @@ public class WUF extends DockPanel{
 	public static final FavoritePanel favPanel = new FavoritePanel();
 	public static final MapPanel mPanel = new MapPanel();
 	
-	private static final Label userName = new Label( "guest" );
+	//private static final Label userName = new Label( "guest" );
     public static int currentselect = 0;
-
+    
+    private HorizontalPanel outer = new HorizontalPanel ();
+    
 	/**
 	 * Constructor for this DockPanel. Only used from CalMap.java
 	 */
 	public WUF() {
-	}
-    
-    /**
-     * Builds the UI, one piece at a time.
-     */
-    public void initialize() {
         // Build the Header
-        RootPanel header = RootPanel.get("header");
-        RootPanel.get("messagePanel").add(messagePanel);
-        RootPanel.get("usernamePanel").add(userName);
+		outer.add(messagePanel);
+//		outer.add(userName);
 
         // Building the TabPanel
         tPanel.add(locPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See POIs in Map</span></div>", true); // List of locations to plot, and a plot button
         tPanel.add(favPanel, "<div id=\"tab_route\" class=\"one_tab\"><span>See Your Favorite</span></div>", true);
         tPanel.addTabListener(new TabClickListener());
-        RootPanel.get("tabPanel").add(tPanel);
+        outer.add(tPanel);
         
         //Build the MapPanel
-        RootPanel.get("mapPanel").add(mPanel);
-        message("將景點拉動到合適位置.");
+        outer.add(mPanel);
+        initWidget ( outer );
+//        message("將景點拉動到合適位置.");
 
 //因為沒有辦法在一開始就知道有沒有登入,所以這邊要先關閉
 //登入狀況等到main後段,執行差不多時再檢查登入情形
-        RootPanel.get("fb-root").add( new FrontpageViewController () );
-    }
+//        RootPanel.get("fb-root").add( new FrontpageViewController () );
+	}
+    
 
     public static void chooseTab(int index) { tPanel.selectTab(index); }
 
@@ -76,14 +71,14 @@ public class WUF extends DockPanel{
         messagePanel.setText(s);
 	}
 
-	public static String username() {
+//	public static String username() {
 //		return "Kay Jean";
-		return userName.getText();
-	}
+//		return userName.getText();
+//	}
 
-	public static void setusername( String s ) {
-		userName.setText(s);
-	}
+//	public static void setusername( String s ) {
+//		userName.setText(s);
+//	}
 
 	
 //	/** Start and stop the waiting bar... **/
@@ -117,7 +112,7 @@ public class WUF extends DockPanel{
     		//畫在畫面上
     		favPanel.addFavorite( loc.n );
     		//資料送入cache中server
-    		DataSwitch.get().sendNode(username() , 1 , loc.n , new CoordinateSendCallback() );
+    		DataSwitch.get().sendNode( Waggle_ui.username.id , 1 , loc.n , new CoordinateSendCallback() );
     		locPanel.removeLocation( loc );
     	//}
     }
@@ -126,7 +121,7 @@ public class WUF extends DockPanel{
     //只是在html部分名子不能改變
     
     //測試內容
-
+/*
     public static void test2( Composite example ){
     	RootPanel mainView = RootPanel.get("login");
     	mainView.clear();
@@ -157,4 +152,5 @@ public class WUF extends DockPanel{
         // Add example
         mainView.add( examplePanel );
     }
+*/    
 }

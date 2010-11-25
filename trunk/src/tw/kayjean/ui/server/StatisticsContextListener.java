@@ -18,7 +18,7 @@ public class StatisticsContextListener implements ServletContextListener
     {
         timer = new java.util.Timer(true);
         event.getServletContext().log("定时器已启动"); 
-        timer.schedule(new StatisticsTask(event.getServletContext()), 0, 60*1000);//每隔1min
+        timer.schedule(new StatisticsTask(event.getServletContext()), 0, 2*60*1000);//每隔X min
         event.getServletContext().log("已经添加任务调度表");
     }
     

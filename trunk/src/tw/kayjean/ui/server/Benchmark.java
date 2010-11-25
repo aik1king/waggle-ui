@@ -43,6 +43,5 @@ public class Benchmark
 		float sec = t / 1000f;
 		
 		System.err.println("Took " + t + " for 100,000 searches ("+100000f / sec+" searches/sec)");
-
 	}
 }
