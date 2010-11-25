@@ -24,19 +24,7 @@ public class MemCache {
 
 	public MemCache()
 	{
-		if( testBucket2 == null ){
-			try {
-				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
-				s3Service = new RestS3Service(awsCredentials);
-				//儲存個人資料..這個方法怪怪的,不過暫時有效
-				testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
-			}
-			catch( Exception e ){
-				System.out.println( e.toString() );
-			}
-		}
 	}
-
 	
 	public static List<Node> getcache( String data ){
 		CacheData ci = cacheList.get(data);
@@ -87,13 +75,22 @@ public class MemCache {
 					String s = xstream.toXML(d);
 					//將XML存進S3裡面,直接蓋入
 					S3Object stringObject = new S3Object(username, s);
+					if( testBucket2 == null ){
+						try {
+							AWSCredentials awsCredentials = new AWSCredentials("" , "");
+							s3Service = new RestS3Service(awsCredentials);
+							//儲存個人資料..這個方法怪怪的,不過暫時有效
+							testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
+						}
+						catch( Exception ee ){
+							System.out.println( ee.toString() );
+						}
+					}
 					s3Service.putObject(testBucket2, stringObject);
 				}
 
 				//提供給別人項目,用queue形式,某個人一整批存入同一個人,因為可以存入很長資料
 			}
-			
-			
 /*			
 			Collection c = cacheList.values();
 			Iterator itr = c.iterator();
