@@ -121,7 +121,7 @@ table { border: 1px solid blue; } */
 	background-color: #ffff99;
 }
 .gwt-TabPanelBottom {
-	width: 300px;
+	width: 600px;
 	/*height: 420px;*/
 	border-bottom: 1px solid #5a6782;
 }
@@ -194,7 +194,7 @@ table { border: 1px solid blue; } */
 }
 
 .locationEntry {
-	width: 280px;
+	width: 600px;
 	margin: 2px 2px 10px 10px;
 }
 .locationEntry .label {

@@ -104,7 +104,7 @@ http://www.kayjean.idv.tw:8888/Waggle_ui.html?gwt.codesvr=127.0.0.1:9997
 windows\system32\drivers\etc\hosts
 這樣才能通過測試
 
-
+http://developers.facebook.com/docs/api
 
 
 todo
@@ -120,9 +120,12 @@ UI
 			看到已經有一些朋友貢獻給他的各個內容
 			引誘,讓他已是專家的地方出現在準備分配畫面上,期望能優先轉送出去
 			>>>>>>>>>列出朋友區域<<<<<<<<<
+				把朋友名子放進框框中
 				加入使用者照片
-				http://graph.facebook.com/100000990330592/picture
-				http://graph.facebook.com/100000124964790/picture
+					http://graph.facebook.com/100000990330592/picture
+					http://graph.facebook.com/100000124964790/picture
+				地點進來後,會加入這個朋友ID對應,所以NODE也要加入新欄位ID還有時間
+				SERVER更新,加入TRASH對應
 	REFRESH機制
 		過一陣子就清除所有CACHE內容,讓程式直接從SERVER中讀取資料,不然實在累積太多資料啦
 	項目在不同tab之間移動
@@ -198,5 +201,6 @@ offline process
 			打開某人XXX朋友A 自己基本資料包括我的朋友LIST,找到 某人XXX 更新他的數字內容,還有專家內容
 			
 
-如何取得email
-http://developers.facebook.com/docs/api
+
+如何取得f8的email
+DRAGDROP不能使用,很奇怪,一定要解決

@@ -3,7 +3,9 @@ package tw.kayjean.ui.client;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -11,19 +13,19 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
+import com.allen_sauer.gwt.dnd.client.DragController;
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
 import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
+import com.allen_sauer.gwt.dnd.client.drop.AbsolutePositionDropController;
+import com.allen_sauer.gwt.dnd.client.drop.VerticalPanelDropController;
+import com.allen_sauer.gwt.dnd.client.drop.HorizontalPanelDropController;
 import com.allen_sauer.gwt.dnd.client.drop.IndexedDropController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
-//import com.allen_sauer.gwt.dnd.demo.client.DemoDragHandler;
-//import com.allen_sauer.gwt.dnd.demo.client.example.DraggableFactory;
-//import com.allen_sauer.gwt.dnd.demo.client.example.Example;
-
 
 /**
  * Our routelist, where elements are draggable!
@@ -36,8 +38,7 @@ public class RouteFlow extends Composite {
 
 	//整個資料區塊位置,用這個表現
     VerticalPanel dragElements = new VerticalPanel();
-    
-    PickupDragController widgetDragController;
+    PickupDragController dragController;
 
     //friends
     private static final int COLUMNS = 2;
@@ -46,29 +47,15 @@ public class RouteFlow extends Composite {
     private static final int IMAGE_WIDTH = 65;
     
     public RouteFlow() {
-        VerticalPanel routeAndTrash = new VerticalPanel();
+    	AbsolutePanel containingPanel = new AbsolutePanel();
+    	dragController = new PickupDragController(containingPanel, false);
+    	containingPanel.setPixelSize(600, 400);
+    	setWidget(containingPanel);
 
-        // Clear all button
-        HTML clearAll = new HTML("<div id=\"clear_all\">TRASH</div>");
-        clearAll.setTitle("Click to clear all locations from this list, or you can drag locations here to delete them as an alternative to clicking the red buttons!");
-//        clearAll.addClickListener(new ClearAllListener());
-        routeAndTrash.add(clearAll);
-        //專門為了TRASH設計的動作
-        TrashBinDropController trashDropController = new TrashBinDropController(clearAll);
-
-        
-        // Define a boundary for the dragging of elements
-        AbsolutePanel boundaryPanel = new AbsolutePanel();
-        boundaryPanel.add(dragElements);
-        // Create new controllers and tie them, plus the dragElements, together
-        //將一個實際區域和DRAG功能結合
-        widgetDragController = new PickupDragController(boundaryPanel, true);
-        widgetDragController.addDragHandler(new LocationDragHandler());
-        routeAndTrash.add(boundaryPanel);
-        
-        //有排列順序型態
-        IndexedDropController widgetDropController = new IndexedDropController(dragElements);
-        
+    	Bin trashBin2 = new TrashBin(IMAGE_WIDTH, IMAGE_HEIGHT);
+    	containingPanel.add(trashBin2);
+    	BinDropController trashDropController = new BinDropController(trashBin2);
+        dragController.registerDropController(trashDropController);
 
         //friends
         FlexTable flexTable = new FlexTable();
@@ -81,69 +68,27 @@ public class RouteFlow extends Composite {
             flexTable.setWidget(i, j, simplePanel);
             //flexTable.getCellFormatter().setStyleName(i, j, CSS_DEMO_PUZZLE_CELL);
 
-            // place a pumpkin in each panel in the cells in the first column
-            //if (j == 0) {
-            //  simplePanel.setWidget(createDraggable());
-            //}
             Bin trashBin = new TrashBin(IMAGE_WIDTH, IMAGE_HEIGHT);
             simplePanel.setWidget( trashBin );
             BinDropController openTrashBinDropController = new BinDropController(trashBin);
-            widgetDragController.registerDropController(openTrashBinDropController);
-            
-            // instantiate a drop controller of the panel in the current cell
-            //SetWidgetDropController dropController = new SetWidgetDropController(simplePanel);
-            //dragController.registerDropController(dropController);
+            dragController.registerDropController(openTrashBinDropController);
           }
         }
-        routeAndTrash.add(flexTable);
-        
+        containingPanel.add(flexTable);
 
-        widgetDragController.registerDropController(widgetDropController);
-        widgetDragController.registerDropController(trashDropController);
-
-        //生成
-        initWidget(routeAndTrash);
-
-        // Set Styles
-        this.setStyleName("routeflow");
-        routeAndTrash.setStyleName("routeandtrash");
-        boundaryPanel.setStyleName("dragarea");
+	    VerticalPanelDropController widgetDropController = new VerticalPanelDropController(dragElements);
+	    dragController.registerDropController(widgetDropController);
+	    containingPanel.add(dragElements, 200, 20);
     }
 
-    /**
-     * For the Clear All button
-     */
-/*    
-    private class ClearAllListener implements ClickListener {
-        public void onClick(Widget sender) {
-            WUF.clearMap();
-            WUF.mPanel.recenter();
-        }
-    }
-*/
-    /**
-     * Inner class of RouteFlow that controls what happens on drag movements.
-     */
-    //只是拉來拉去,沒有實際用處
-    private class LocationDragHandler implements DragHandler {
-        public void onDragEnd(DragEndEvent event) {
-//            signalMaptoDrawRoute();
-        }
-        public void onDragStart(DragStartEvent event) {}
-        public void onPreviewDragEnd(DragEndEvent event) throws VetoDragException {}
-        public void onPreviewDragStart(DragStartEvent event) throws VetoDragException {}
-    }
-
-    
-    
     /**
      * Add LocationEntries via this method.
      * @param le New LocationEntry object
      */
     protected void add (LocationEntry le) {
-        widgetDragController.makeDraggable(le);
-        dragElements.add(le);
-        //準備使用這個,加在正確位置 dragElements.insert(w, beforeIndex)
+    	dragController.makeDraggable(le);
+		dragElements.add(le);
+		//準備使用這個,加在正確位置 dragElements.insert(w, beforeIndex)
     }
 
     /**
@@ -196,147 +141,4 @@ public class RouteFlow extends Composite {
         }
         return false;
     }
-    
-    /**
-     * Generates an entire List object of Location Strings.
-     * For use when calling the RoutingService.
-     * @return List
-     */
-/*    
-    protected List generateLocStringList() {
-        List locs = new Vector();
-        for (int i = 0; i < this.size(); i++) {
-            locs.add(this.getLocString(i));
-        }
-        return locs;
-    }
-*/
-    
-    /**
-     * Goes through the LocationEntrys of this RouteFlow.
-     * Ensures that the trigger for stopovers is shown or not, depending on index
-     * Also goes and labels each of the LocationEntrys so you know which number they are
-     * Also undos hiding of LocationEntrys (resetting style)
-     * Resets currHighlight to none of the LocationEntrys
-     */
-/*    
-    protected void ensureLocUIConsistency1() {
-
-//        currHighlight = -1;
-
-        // Go through each LocationEntry in routeFlow, making sure they look okay
-        for (int i = 0; i < this.size(); i++) {
-
-            // Sets index instance var, and changes Label on screen
-            this.getEntry(i).setIndex(i);
-
-            // Resets style
-            this.getEntry(i).setStyleName("locationEntry");
-        }
-    }
-*/
-
-    /**
-     * This class controls the drop behavior the recycle bin.
-     * It simply calls removeLocation when a LocationEntry is dropped onto it.
-     * @author Simon
-     */
-    private class TrashBinDropController extends SimpleDropController {
-        public TrashBinDropController(Widget dropTarget) {
-            super(dropTarget);
-        }
-        
-        public void onDrop(DragContext context) {
-            super.onDrop(context);
-            //就是放在垃圾桶就是了
-            WUF.favoriteLocation( (LocationEntry)(context.draggable));
-        }
-
-        public void onEnter(DragContext context) {
-            super.onEnter(context);
-        }
-
-        public void onLeave(DragContext context) {
-            super.onLeave(context);
-        }
-
-        @Override
-        public void onPreviewDrop(DragContext context) throws VetoDragException {
-        	super.onPreviewDrop(context);
-//        	if (!bin.isWidgetEater()) 
-//        	{
-//        		throw new VetoDragException();
-//        	}
-        }
-/*原本寫法    	
-    	public TrashBinDropController(Widget dropTarget) {
-            super(dropTarget);
-        }
-
-        public DragEndEvent onDrop(Widget reference, Widget draggable, DragController dragController) {
-            DragEndEvent event = super.onDrop(reference, draggable, dragController);
-            removeLocation((LocationEntry) draggable);
-            return event;
-        }
-
-        public void onEnter(Widget reference, Widget draggable, DragController dragController) {
-            super.onEnter(reference, draggable, dragController);
-        }
-
-        public void onLeave(Widget draggable, DragController dragController) {
-            super.onLeave(draggable, dragController);
-        }
-
-        public void onPreviewDrop(Widget reference, Widget draggable, DragController dragController) throws VetoDropException {
-            super.onPreviewDrop(reference, draggable, dragController);
-        }
-*/        
-    }
-    
-    private class BinDropController extends SimpleDropController {
-
-    	  private static final String CSS_DEMO_BIN_DRAGGABLE_ENGAGE = "demo-bin-draggable-engage";
-
-    	  private Bin bin;
-
-    	  public BinDropController(Bin bin) {
-    	    super(bin);
-    	    this.bin = bin;
-    	  }
-
-    	  @Override
-    	  public void onDrop(DragContext context) {
-    	    for (Widget widget : context.selectedWidgets) {
-    	      bin.eatWidget(widget);
-    	    }
-    	    super.onDrop(context);
-    	  }
-
-    	  @Override
-    	  public void onEnter(DragContext context) {
-    	    super.onEnter(context);
-    	    for (Widget widget : context.selectedWidgets) {
-    	      widget.addStyleName(CSS_DEMO_BIN_DRAGGABLE_ENGAGE);
-    	    }
-    	    bin.setEngaged(true);
-    	  }
-
-    	  @Override
-    	  public void onLeave(DragContext context) {
-    	    for (Widget widget : context.selectedWidgets) {
-    	      widget.removeStyleName(CSS_DEMO_BIN_DRAGGABLE_ENGAGE);
-    	    }
-    	    bin.setEngaged(false);
-    	    super.onLeave(context);
-    	  }
-
-    	  @Override
-    	  public void onPreviewDrop(DragContext context) throws VetoDragException {
-    	    super.onPreviewDrop(context);
-    	    if (!bin.isWidgetEater()) {
-    	      throw new VetoDragException();
-    	    }
-    	  }
-    }
-
 }

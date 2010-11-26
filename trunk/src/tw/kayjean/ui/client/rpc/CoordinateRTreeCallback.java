@@ -8,13 +8,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.maps.client.InfoWindow;
-import com.google.gwt.maps.client.InfoWindowContent;
-import com.google.gwt.maps.client.geom.LatLng;
-
 
 import tw.kayjean.ui.client.WUF;
 import tw.kayjean.ui.client.model.Node;

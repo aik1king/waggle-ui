@@ -34,7 +34,7 @@ public class WUF extends Composite{
 	//private static final Label userName = new Label( "guest" );
     public static int currentselect = 0;
     
-    private HorizontalPanel outer = new HorizontalPanel ();
+    private VerticalPanel outer = new VerticalPanel ();
     
 	/**
 	 * Constructor for this DockPanel. Only used from CalMap.java
