@@ -41,46 +41,60 @@ public class RouteFlow extends Composite {
     PickupDragController dragController;
 
     //friends
-    private static final int COLUMNS = 2;
-    private static final int ROWS = 2;
+    private static final int COLUMNS = 4;
+    private static final int ROWS = 10;
     private static final int IMAGE_HEIGHT = 58;
     private static final int IMAGE_WIDTH = 65;
     
+    AbsolutePanel containingPanel = new AbsolutePanel();
+    private static boolean friends = false;
+    
     public RouteFlow() {
-    	AbsolutePanel containingPanel = new AbsolutePanel();
+    	
     	dragController = new PickupDragController(containingPanel, false);
     	containingPanel.setPixelSize(600, 400);
     	setWidget(containingPanel);
 
-    	Bin trashBin2 = new TrashBin(IMAGE_WIDTH, IMAGE_HEIGHT);
+    	Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "0" , "移除" );
     	containingPanel.add(trashBin2);
     	BinDropController trashDropController = new BinDropController(trashBin2);
         dragController.registerDropController(trashDropController);
-
-        //friends
-        FlexTable flexTable = new FlexTable();
-        // create our grid
-        for (int i = 0; i < COLUMNS; i++) {
-          for (int j = 0; j < ROWS; j++) {
-            // create a simple panel drop target for the current cell
-            SimplePanel simplePanel = new SimplePanel();
-            simplePanel.setPixelSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-            flexTable.setWidget(i, j, simplePanel);
-            //flexTable.getCellFormatter().setStyleName(i, j, CSS_DEMO_PUZZLE_CELL);
-
-            Bin trashBin = new TrashBin(IMAGE_WIDTH, IMAGE_HEIGHT);
-            simplePanel.setWidget( trashBin );
-            BinDropController openTrashBinDropController = new BinDropController(trashBin);
-            dragController.registerDropController(openTrashBinDropController);
-          }
-        }
-        containingPanel.add(flexTable);
 
 	    VerticalPanelDropController widgetDropController = new VerticalPanelDropController(dragElements);
 	    dragController.registerDropController(widgetDropController);
 	    containingPanel.add(dragElements, 200, 20);
     }
 
+    public void initfriend(){
+        //friends
+    	if( friends == false ){
+        FlexTable flexTable = new FlexTable();
+        // create our grid
+        int totalcount = 0;
+        if( Waggle_ui.friends != null && Waggle_ui.friends.items != null )
+        	totalcount = Waggle_ui.friends.items.size();
+        int count = 0;
+        for (int i = 0; i < COLUMNS && count < totalcount ; i++) {
+          for (int j = 0; j < ROWS && count < totalcount ; j++) {
+            // create a simple panel drop target for the current cell
+            SimplePanel simplePanel = new SimplePanel();
+            simplePanel.setPixelSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+            flexTable.setWidget(i, j, simplePanel);
+            //flexTable.getCellFormatter().setStyleName(i, j, CSS_DEMO_PUZZLE_CELL);
+
+            Bin friendBin = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.items.get(count).id , Waggle_ui.friends.items.get(count).name );
+            simplePanel.setWidget( friendBin );
+            BinDropController openTrashBinDropController = new BinDropController(friendBin);
+            dragController.registerDropController(openTrashBinDropController);
+            
+            count++;
+          }
+        }
+        containingPanel.add(flexTable);
+        friends = true;
+    	}
+    }
+    
     /**
      * Add LocationEntries via this method.
      * @param le New LocationEntry object

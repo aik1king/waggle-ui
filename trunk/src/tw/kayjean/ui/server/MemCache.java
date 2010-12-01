@@ -1,5 +1,7 @@
 package tw.kayjean.ui.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +14,8 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.security.AWSCredentials;
 
 import com.thoughtworks.xstream.XStream;
+import com.xerox.amazonws.sqs2.MessageQueue;
+import com.xerox.amazonws.sqs2.QueueService;
 
 import tw.kayjean.ui.client.model.Node;
 
@@ -20,6 +24,7 @@ public class MemCache {
 	private static Hashtable<String, CacheData> cacheList= new Hashtable<String, CacheData>();
 	static S3Service s3Service = null;
 	static S3Bucket testBucket2 = null;
+	static QueueService qs = null;
 	static XStream xstream = new XStream();
 
 	public MemCache()
@@ -66,8 +71,28 @@ public class MemCache {
 				Map.Entry e = (Map.Entry)i.next();
 				String username = e.getKey().toString();
 				List<Node> d = ((CacheData)e.getValue()).getdata();
+				
+				//HashMap tid = new HashMap();
 				for (int j = 0; j < d.size(); j++) {
 					System.out.println("Last Item : " + ((Node) d.get(j)).name);
+					//依照對象,變成很多個結構,分別放在不同結構
+/*					
+					try{
+						if (tid.containsKey(  ( (Node) d.get(j)).tid  )) {
+							// 有資料
+							ArrayList detail = (ArrayList) tid.get( ( (Node) d.get(j)).tid );
+							detail.add( (Node) d.get(j) );
+							tid.put( ( (Node) d.get(j)).tid , detail);
+						} else {
+							ArrayList detail = new ArrayList();
+							detail.add( (Node) d.get(j)  );
+							tid.put( ( (Node) d.get(j)).tid , detail);
+						}
+					}
+					catch(Exception domainerror){
+						System.out.println( domainerror );
+					}
+*/
 				}
 
 				if( d.size() > 0 ){
@@ -87,11 +112,28 @@ public class MemCache {
 						}
 					}
 					s3Service.putObject(testBucket2, stringObject);
-				}
+					
 
-				//提供給別人項目,用queue形式,某個人一整批存入同一個人,因為可以存入很長資料
+					//提供給別人項目,用queue形式,某個人一整批存入同一個人,因為可以存入很長資料
+					if( qs == null ){
+						qs = new QueueService( "" , "" );
+					}
+					MessageQueue msgQueue = qs.getOrCreateMessageQueue("serviceid2friends");
+					String msgId = msgQueue.sendMessage(username);
+				}
 			}
 /*			
+					
+					for(Iterator ii = tid.entrySet().iterator(); ii.hasNext(); )
+					{
+						Map.Entry ee = (Map.Entry)ii.next();
+						String tusername = ee.getKey().toString();
+						List<Node> dd = (List<Node>)ee.getValue();
+						String ss = xstream.toXML(dd);
+						//依照
+
+					}
+
 			Collection c = cacheList.values();
 			Iterator itr = c.iterator();
 			// iterate through HashMap values iterator

@@ -106,6 +106,19 @@ windows\system32\drivers\etc\hosts
 
 http://developers.facebook.com/docs/api
 
+//原本網站資料是 http://www.facebook.com/apps/application.php?id=37309251911#!/apps/application.php?id=37309251911&v=wall
+//可以看到POST內容
+//首先要調整設定成為,讓albumupload在沒有LOGIN時,也可以看到內容,匿名發文
+//控制位置是 http://www.facebook.com/developers/createapp.php#!/developers/apps.php
+//在 第二項 網站部份 記得加入siteurl,這樣才能通過驗證,否則登入時會怪怪的
+//其他部分看不出來 如何設定,決定到控制頁面
+//目前網站位置是 http://www.facebook.com/apps/application.php?id=102921393079418
+//有個編輯應用程式,選擇編輯應用程式設定....這裡會跳回原本位置
+//塗鴉牆設定,改成所有留言
+
+//當從應用程式,選擇管理頁面後,打開匿名留言,就會看到全部內容了耶,和一般相同
+
+
 
 todo
 
@@ -188,18 +201,6 @@ SERVER立刻處理
 	定位
 		ip2geo要完成
 		讀取新資料
-offline process
-	geodata更新機制
-	新做出來東西能夠更新geodata
-	有個QUEUE A
-		拿到 某人XXX ( 景點1 目前使用者 時間 .... )之後
-			打開某人 別人貢獻給我出的項目  檔案,把目前資料加進去,某人接受的總數就會改變
-				變更某人的預設位置
-				取得某人的朋友LIST,寫入QUEUE
-	有個QUEUE B
-		拿到 某人XXX朋友A ( 某人XXX , 目前總數為A , 是什麼地方專家 )之後
-			打開某人XXX朋友A 自己基本資料包括我的朋友LIST,找到 某人XXX 更新他的數字內容,還有專家內容
-			
 
 
 如何取得f8的email
