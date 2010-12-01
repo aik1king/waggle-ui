@@ -106,6 +106,7 @@ public class WUF extends Composite{
 		}
 	}
 
+/*	
     public static void favoriteLocation( final LocationEntry loc ){
     	// type == 0 , move to Favorite
     	//if( type == 0 ){
@@ -116,7 +117,7 @@ public class WUF extends Composite{
     		locPanel.removeLocation( loc );
     	//}
     }
-    
+*/    
     //使用者不一定要使用fb-root這個區塊啦
     //只是在html部分名子不能改變
     

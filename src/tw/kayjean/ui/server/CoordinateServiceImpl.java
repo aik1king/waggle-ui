@@ -14,6 +14,8 @@ import com.xerox.amazonws.sdb.Item;
 import com.xerox.amazonws.sdb.ItemAttribute;
 import com.xerox.amazonws.sdb.QueryWithAttributesResult;
 import com.xerox.amazonws.sdb.SimpleDB;
+import com.xerox.amazonws.sqs2.MessageQueue;
+import com.xerox.amazonws.sqs2.QueueService;
 
 import org.jets3t.service.S3Service;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -54,12 +56,15 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	S3Bucket testBucket2 = null;
 	S3Bucket testBucket4 = null;
 	
+	public QueueService qs = null;
+	public MessageQueue msgQueue = null;
+	
 	public boolean preparedb( String dbname ) {
 		if (sds == null) {
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
                 //sds = SamplesUtils.loadASWDB();
-				sds = new SimpleDB("" , "" , false);
+				sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);
                 sds.setSignatureVersion(1);
 
                 /*
@@ -77,6 +82,11 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
                     sds.createDomain(dbname);
                     return false;
                 }
+                
+				if( qs == null ){
+					qs = new QueueService( "AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" );
+					msgQueue = qs.getOrCreateMessageQueue("servicerecordfriends");
+				}
 			}
 			catch( Exception e ){
 				System.out.println( e.toString() );
@@ -85,7 +95,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 
 		if( testBucket1 == null || testBucket2 == null || testBucket4 == null ){
 			try {
-				AWSCredentials awsCredentials = new AWSCredentials("" , "");
+				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
 				s3Service = new RestS3Service(awsCredentials);
 				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
@@ -356,6 +366,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 				//將XML存進S3裡面
 				S3Object stringObject = new S3Object(fd.id + "_f", s);
 				s3Service.putObject(testBucket2, stringObject);
+				//會有process為每個朋友建立基本檔案,進行id2friends時可以增加項目
+				String msgId = msgQueue.sendMessage(fd.id + "_f");
 			} catch (Exception e) {
 				System.out.println(e);
 			}

@@ -248,7 +248,7 @@ public class UserInfoViewController extends Composite {
         }
         
         JsArray array = jso.getArray("data");
-        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle ();
+//        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle ();
         
 		FBFriends ffs = new FBFriends();
 		ffs.items = new ArrayList();
@@ -257,7 +257,7 @@ public class UserInfoViewController extends Composite {
 
             String name = j.get("name");
             String id = j.get("id");
-            oracle.add(name);
+ //           oracle.add(name);
             suggestionWorkaround.put ( name, id);
             
             FBFriend ff = new FBFriend();
@@ -266,7 +266,8 @@ public class UserInfoViewController extends Composite {
             ffs.items.add(ff);
         }
 		Waggle_ui.friends = ffs;
-        
+
+/*		
         HorizontalPanel panel = new HorizontalPanel ();
         panel.getElement().setAttribute("style", "padding: 10px; border: 1px solid #cccccc" );
         panel.add ( new HTML ( "Type friends name and hit return to see available methods: " ) );
@@ -289,7 +290,7 @@ public class UserInfoViewController extends Composite {
         
         outer.add (panel);
         outer.add (json);
-        
+*/        
         //將資料送到server進行更新
     	Waggle_ui.coordService.sendDetail( Waggle_ui.username , Waggle_ui.friends , new AsyncCallback() {
 
@@ -300,6 +301,7 @@ public class UserInfoViewController extends Composite {
     		}
 
     		public void onSuccess(final Object result ) {
+    			WUF.locPanel.routeFlow.initfriend();
 /*先不處理
     			Poi poidata = (Poi) result;
     			if (poidata == null) {
