@@ -72,27 +72,9 @@ public class MemCache {
 				String username = e.getKey().toString();
 				List<Node> d = ((CacheData)e.getValue()).getdata();
 				
-				//HashMap tid = new HashMap();
 				for (int j = 0; j < d.size(); j++) {
 					System.out.println("Last Item : " + ((Node) d.get(j)).name);
 					//依照對象,變成很多個結構,分別放在不同結構
-/*					
-					try{
-						if (tid.containsKey(  ( (Node) d.get(j)).tid  )) {
-							// 有資料
-							ArrayList detail = (ArrayList) tid.get( ( (Node) d.get(j)).tid );
-							detail.add( (Node) d.get(j) );
-							tid.put( ( (Node) d.get(j)).tid , detail);
-						} else {
-							ArrayList detail = new ArrayList();
-							detail.add( (Node) d.get(j)  );
-							tid.put( ( (Node) d.get(j)).tid , detail);
-						}
-					}
-					catch(Exception domainerror){
-						System.out.println( domainerror );
-					}
-*/
 				}
 
 				if( d.size() > 0 ){
@@ -124,15 +106,6 @@ public class MemCache {
 			}
 /*			
 					
-					for(Iterator ii = tid.entrySet().iterator(); ii.hasNext(); )
-					{
-						Map.Entry ee = (Map.Entry)ii.next();
-						String tusername = ee.getKey().toString();
-						List<Node> dd = (List<Node>)ee.getValue();
-						String ss = xstream.toXML(dd);
-						//依照
-
-					}
 
 			Collection c = cacheList.values();
 			Iterator itr = c.iterator();
