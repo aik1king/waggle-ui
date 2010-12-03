@@ -10,4 +10,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FBFriend implements IsSerializable {
 	public String id;
 	public String name;
+
+	public int item_me2friends;
+	public int item_friends2me;
+	
+	public int me2friends;
+	public int friends2me;
 }
