@@ -41,6 +41,7 @@ public class MemCache {
 		}
 	}
 	
+	//第一次加入資料,可能是從FILE,也可能是個空的EMPTY
 	public static boolean addcache( String data , List<Node> d ){
 		CacheData ci = cacheList.get(data);
 		if (null == ci){
@@ -49,38 +50,47 @@ public class MemCache {
 			return (true);
 		}
 		ci.additem( d );
+		ci.ischange( false );
 		return (true);
 	}
 	
+	//新增加進來的
 	public static boolean addcacheitem( String data , Node d ){
 		CacheData ci = cacheList.get(data);
 		if (null == ci){
+			//不太可能啦
 			return (false);
 		}
 		ci.additem( d );
+		ci.ischange( true );
+		ci.resetcount();
 		return (true);
 	}
 
 	public static void showdata() {
 		// 輪流顯示全部內容
 		try {
-			
+			System.out.println( "目前cache大小為" + cacheList.size() );
+			ArrayList removesets = new ArrayList();
 			for(Iterator i = cacheList.entrySet().iterator(); i.hasNext(); )
 			{
 				//先不管時間問題
 				Map.Entry e = (Map.Entry)i.next();
 				String username = e.getKey().toString();
 				List<Node> d = ((CacheData)e.getValue()).getdata();
+				boolean needSave = ((CacheData)e.getValue()).needSave();
 				
-				for (int j = 0; j < d.size(); j++) {
-					System.out.println("Last Item : " + ((Node) d.get(j)).name);
-					//依照對象,變成很多個結構,分別放在不同結構
-				}
+//				for (int j = 0; j < d.size(); j++) {
+//					System.out.println("Last Item : " + ((Node) d.get(j)).name);
+//				}
 
-				if( d.size() > 0 ){
-					// 將東西變成一個XML
+				if( ((CacheData)e.getValue()).needDiscard() ){
+					System.out.println( username + "停留很久,沒有變動,準備刪除" );
+					removesets.add(username);
+				}
+				else if( ((CacheData)e.getValue()).needSave() ){
+					System.out.println( username + "停留很久,有變動,準備儲存入檔案系統中並且刪除" );
 					String s = xstream.toXML(d);
-					//將XML存進S3裡面,直接蓋入
 					S3Object stringObject = new S3Object(username, s);
 					if( testBucket2 == null ){
 						try {
@@ -94,7 +104,6 @@ public class MemCache {
 						}
 					}
 					s3Service.putObject(testBucket2, stringObject);
-					
 
 					//提供給別人項目,用queue形式,某個人一整批存入同一個人,因為可以存入很長資料
 					if( qs == null ){
@@ -102,64 +111,25 @@ public class MemCache {
 					}
 					MessageQueue msgQueue = qs.getOrCreateMessageQueue("serviceid2friends");
 					String msgId = msgQueue.sendMessage(username);
-				}
-			}
-/*			
 					
-
-			Collection c = cacheList.values();
-			Iterator itr = c.iterator();
-			// iterate through HashMap values iterator
-			while (itr.hasNext()) {
-
-				//對於每一個使用者
-				List<Node> d = ((CacheData) itr.next()).getdata();
-				for (int j = 0; j < d.size(); j++) {
-					System.out.println("Last Item : " + ((Node) d.get(j)).name);
+					//準備刪除掉這個項目
+					removesets.add(username);
+				}
+				else
+				{
+					System.out.println( username + "還在運作中,數值加1" + ((CacheData)e.getValue()).getUnChangeCount()  );
+					((CacheData)e.getValue()).incUnchange();					
 				}
 			}
 			
-				//如果沒有
-
-				// 寫入興趣點透過檔案,因為是直接寫入,直接蓋入
-				XStream xstream = new XStream();
-				boolean awsexist = false;
-				S3Object objectComplete2 = null;
-				try {
-					objectComplete2 = s3Service.getObject(testBucket2, username);
-					awsexist = true;
-				} catch (Exception e) {
-				}
-				if (awsexist == false) {
-					try {
-						ArrayList retNodes = new ArrayList();
-						retNodes.add(d);
-						// 將東西變成一個XML
-						String s = xstream.toXML(retNodes);
-						// 將XML存進S3裡面
-						S3Object stringObject = new S3Object(username, s);
-						s3Service.putObject(testBucket2, stringObject);
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-				} else {
-					// 使用上次內容
-					try {
-						List<Node> retNodes = null;
-						retNodes = (List<Node>) xstream.fromXML(ServiceUtils
-							.readInputStreamToString(objectComplete2
-									.getDataInputStream(), "UTF-8"));
-						retNodes.addAll(d);
-						// 將東西變成一個XML
-						String s = xstream.toXML(retNodes);
-						// 將XML存進S3裡面
-						S3Object stringObject = new S3Object(username, s);
-						s3Service.putObject(testBucket2, stringObject);
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-				}
-*/				
+			//刪除memcache內容
+			for (int j = removesets.size() - 1; j >= 0; j--) {
+				System.out.println( "進行刪除" + removesets.get(j) );
+				cacheList.remove( removesets.get(j) );
+			}
+			
+			System.out.println( "目前cache大小為" + cacheList.size() );
+			
 		} catch (Exception e) {
 			System.out.println(e);
 		}
