@@ -64,7 +64,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			try {
 				//http://code.google.com/p/typica/wiki/TypicaSampleCode
                 //sds = SamplesUtils.loadASWDB();
-				sds = new SimpleDB("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" , false);
+				sds = new SimpleDB("" , "" , false);
                 sds.setSignatureVersion(1);
 
                 /*
@@ -84,7 +84,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
                 }
                 
 				if( qs == null ){
-					qs = new QueueService( "AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI" );
+					qs = new QueueService( "" , "" );
 					msgQueue = qs.getOrCreateMessageQueue("servicerecordfriends");
 				}
 			}
@@ -95,7 +95,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 
 		if( testBucket1 == null || testBucket2 == null || testBucket4 == null ){
 			try {
-				AWSCredentials awsCredentials = new AWSCredentials("AKIAJHOKOT2THLYRLS3A" , "FnAdaK7zEjbVgHweS1FMM28VFljLe0u8mzi7G0eI");
+				AWSCredentials awsCredentials = new AWSCredentials("" , "");
 				s3Service = new RestS3Service(awsCredentials);
 				//儲存某個geocell內容
 				testBucket1 = s3Service.getOrCreateBucket("xmlgeodata-kayjean");
@@ -210,37 +210,9 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		// 讀取client相關資料
 		if (username != null && !username.equalsIgnoreCase("")) {
 
-			List<Node> l = MemCache.getcache(username);
-			if (l == null) {
-				// 讀取區域檔案,存入cache
-				awsexist = false;
-				try {
-					objectComplete2 = s3Service
-							.getObject(testBucket2, username);
-					awsexist = true;
-				} catch (Exception e) {
-				}
-				if (awsexist == true) {
-					//舊使用者
-					try {
-						l = (List<Node>) xstream.fromXML(ServiceUtils
-								.readInputStreamToString(objectComplete2
-										.getDataInputStream(), "UTF-8"));
-						MemCache.addcache(username, l);
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-				}
-				else{
-					//新使用者
-					//就算沒有原本設定,還是要產生一個MemCache資料,避免之後每次都要讀取S3
-					ArrayList retNodes2 = new ArrayList();
-					MemCache.addcache(username, retNodes2);
-				}
-			}
-			
+			readdatainsertintocache( username );
 			//當作沒有處理過,重新來過
-			l = MemCache.getcache(username);
+			List<Node> l = MemCache.getcache(username);
 
 			if (l != null && l.size() > 0 ) {
 				for (int i = 0; i < l.size(); i++) {
@@ -263,6 +235,39 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		}
 		return retNodes;
 	}
+	
+	public void readdatainsertintocache( String username ){
+		// 讀取區域檔案,存入cache
+		boolean awsexist = false;
+		S3Object objectComplete2 = null;
+		List<Node> l = MemCache.getcache(username);
+		XStream xstream = new XStream();
+		if (l == null) {
+			try {
+				objectComplete2 = s3Service
+						.getObject(testBucket2, username);
+				awsexist = true;
+			} catch (Exception e) {
+			}
+			if (awsexist == true) {
+				//舊使用者
+				try {
+					l = (List<Node>) xstream.fromXML(ServiceUtils
+							.readInputStreamToString(objectComplete2
+									.getDataInputStream(), "UTF-8"));
+					MemCache.addcache(username, l);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+			else{
+				//新使用者
+				//就算沒有原本設定,還是要產生一個MemCache資料,避免之後每次都要讀取S3
+				ArrayList retNodes2 = new ArrayList();
+				MemCache.addcache(username, retNodes2);
+			}
+		}
+	}
 
 	public Integer sendNode(String username, int type, Node n) {
 		n.type = type;
@@ -271,14 +276,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		// 2 別人提供給我
 		if (type == 1 || type == 2 ) {
 			// 寫入興趣點透過memorycache
-			List<Node> l = MemCache.getcache(username);
-			if (l == null || l.size() == 0 ) {
-				ArrayList retNodes = new ArrayList();
-				retNodes.add(n);
-				MemCache.addcache(username, retNodes);
-			} else {
-				MemCache.addcacheitem(username, n);
-			}
+			readdatainsertintocache( username );
+			MemCache.addcacheitem(username, n);
 		}
 		return 1;
 	}
@@ -311,68 +310,133 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	
 	public List sendDetail(FBDetail fd , FBFriends ffs) {
 		boolean awsexist = false;
-		S3Object objectComplete2 = null;
-		XStream xstream = new XStream();
-		//建立個人基本資料 id_d
+
+		//id_d
+		S3Object A_d_S3Object = null;
+		awsexist = false;
 		try {
-			objectComplete2 = s3Service
-					.getObject(testBucket2, fd.id + "_d" );
+			A_d_S3Object = s3Service.getObject(testBucket2, fd.id + "_d" );
 			awsexist = true;
 		} catch (Exception e) {
 		}
 		if (awsexist == true) {
-			//舊使用者
-			//先不處理
-/*			
+			//舊使用者,讀入資料,更新
 			try {
-				l = (List<Node>) xstream.fromXML(ServiceUtils
-						.readInputStreamToString(objectComplete2
-								.getDataInputStream(), "UTF-8"));
-				MemCache.addcache(username, l);
+				XStream A_d_xstream = new XStream();
+				FBDetail A_d = (FBDetail) A_d_xstream
+					.fromXML(ServiceUtils.readInputStreamToString(
+							A_d_S3Object.getDataInputStream(), "UTF-8"));
+				if( A_d.updated_time.equalsIgnoreCase("") ){
+					// 將東西變成一個XML
+					XStream xstream = new XStream();
+					String s = xstream.toXML(fd);
+					//將XML存進S3裡面
+					S3Object A_d_S3Object_t = new S3Object(fd.id + "_d", s);
+					s3Service.putObject(testBucket2, A_d_S3Object_t);
+				}
 			} catch (Exception e) {
 				System.out.println(e);
 			}
-*/			
 		}
 		else{
 			//新使用者
 			try {
 				// 將東西變成一個XML
+				XStream xstream = new XStream();
 				String s = xstream.toXML(fd);
 				//將XML存進S3裡面
-				S3Object stringObject = new S3Object(fd.id + "_d", s);
-				s3Service.putObject(testBucket2, stringObject);
+				S3Object A_d_S3Object_t = new S3Object(fd.id + "_d", s);
+				s3Service.putObject(testBucket2, A_d_S3Object_t);
 			} catch (Exception e) {
 				System.out.println(e);
 			}
 		}
-		//建立朋友資料 id_f
+		
+		//id_f
+		S3Object A_f_S3Object = null;
 		awsexist = false;
 		try {
-			objectComplete2 = s3Service
+			A_f_S3Object = s3Service
 					.getObject(testBucket2, fd.id + "_f" );
 			awsexist = true;
 		} catch (Exception e) {
 		}
 		if (awsexist == true) {
-			//舊使用者
-			//先不處理
+			//舊使用者,讀入資料,更新
+			try {
+				XStream A_f_xstream = new XStream();
+				FBFriends A_f = (FBFriends) A_f_xstream
+					.fromXML(ServiceUtils.readInputStreamToString(
+							A_f_S3Object.getDataInputStream(), "UTF-8"));
+				if( A_f.items.size() < ffs.items.size() ){
+					// 將東西變成一個XML
+					//以A_f為主,沒見過的人,通通加進來
+					for( int i = 0 ; i < ffs.items.size() ; i++ ){
+						int i2 = 0;
+						for (; i2 < A_f.items.size(); i2++) {
+							if (A_f.items.get(i2).id.equalsIgnoreCase( ffs.items.get(i).id )) {
+								break;
+							}
+						}
+						if (i2 < A_f.items.size()) {
+							// 中途跳出,表示有符合過的
+						} else {
+							// 加入資料
+							A_f.items.add(ffs.items.get(i));
+						}
+					}
+					XStream xstream = new XStream();
+					String s = xstream.toXML(A_f);
+					//將XML存進S3裡面
+					S3Object A_f_S3Object_t = new S3Object(fd.id + "_f", s);
+					s3Service.putObject(testBucket2, A_f_S3Object_t);
+				}
+					
+			} catch (Exception e) {
+				System.out.println(e);
+			}
 		}
 		else{
 			//新使用者
 			try {
 				// 將東西變成一個XML
+				XStream xstream = new XStream();
 				String s = xstream.toXML(ffs);
 				//將XML存進S3裡面
-				S3Object stringObject = new S3Object(fd.id + "_f", s);
-				s3Service.putObject(testBucket2, stringObject);
+				S3Object A_f_S3Object_t = new S3Object(fd.id + "_f", s);
+				s3Service.putObject(testBucket2, A_f_S3Object_t);
 				//會有process為每個朋友建立基本檔案,進行id2friends時可以增加項目
-				String msgId = msgQueue.sendMessage(fd.id + "_f");
+				String msgId = msgQueue.sendMessage(fd.id);
 			} catch (Exception e) {
 				System.out.println(e);
 			}
 		}
-		//回傳已經朋友資料
+		
+		//id_r
+		S3Object A_r_S3Object = null;
+		awsexist = false;
+		try {
+			A_r_S3Object = s3Service.getObject(testBucket2, fd.id + "_r" );
+			awsexist = true;
+		} catch (Exception e) {
+		}
+		if (awsexist == true) {
+		}
+		else{
+			//新使用者
+			try {
+				XStream B_r_xstream = new XStream();
+				ArrayList retNodes = new ArrayList();
+				//Node n = new Node();
+				//retNodes.add(n);
+				String B_r_t = B_r_xstream.toXML(retNodes);
+				S3Object B_r_S3Object_t = new S3Object( fd.id + "_r" , B_r_t );
+				s3Service.putObject(testBucket2, B_r_S3Object_t );
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+		
 		return null;
 	}
 	

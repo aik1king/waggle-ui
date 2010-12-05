@@ -76,20 +76,20 @@ public class UserInfoViewController extends Composite {
 	    this.fbCore = fbCore;
 
 	    outer.add ( welcomeHtml );
-		outer.add ( new HTML ( "<p/>" ) );
-		outer.add ( new HTML ( "<hr/><fb:comments xid='albumupload' />" ) );
+		//outer.add ( new HTML ( "<p/>" ) );
+		//outer.add ( new HTML ( "<hr/><fb:comments xid='albumupload' />" ) );
 		
 		//這個項目是實驗用,還沒有使用
 		/*
 		 * Stream Publish 
 		 */
-		class PublishHandler implements ClickHandler {
-            public void onClick(ClickEvent event) {
-                testPublish ();
-            }
-		}
-		streamPublishLink.addClickHandler( new PublishHandler () );
-		outer.add ( streamPublishLink );
+		//class PublishHandler implements ClickHandler {
+        //    public void onClick(ClickEvent event) {
+        //        testPublish ();
+        //    }
+		//}
+		//streamPublishLink.addClickHandler( new PublishHandler () );
+		//outer.add ( streamPublishLink );
 		
 		//這個項目是實驗用,還沒有使用
 		/*
