@@ -2,38 +2,13 @@ package tw.kayjean.ui.client;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
-import com.allen_sauer.gwt.dnd.client.DragContext;
-import com.allen_sauer.gwt.dnd.client.DragController;
-import com.allen_sauer.gwt.dnd.client.DragEndEvent;
-import com.allen_sauer.gwt.dnd.client.DragHandler;
-import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.allen_sauer.gwt.dnd.client.VetoDragException;
-import com.allen_sauer.gwt.dnd.client.drop.AbsolutePositionDropController;
 import com.allen_sauer.gwt.dnd.client.drop.VerticalPanelDropController;
-import com.allen_sauer.gwt.dnd.client.drop.HorizontalPanelDropController;
-import com.allen_sauer.gwt.dnd.client.drop.IndexedDropController;
-import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
-import com.allen_sauer.gwt.dnd.client.drop.DropController;
-import com.allen_sauer.gwt.dnd.client.PickupDragController;
 
-/**
- * Our routelist, where elements are draggable!
- * Notice that the use of the RouteFlow class negates the need
- * for a separate location string List to be maintained.
- * Anything you wanted out of a location string list, call a method
- * inside this class!
- */
 public class RouteFlow extends Composite {
 
 	//整個資料區塊位置,用這個表現
@@ -50,19 +25,18 @@ public class RouteFlow extends Composite {
     private static boolean friends = false;
     
     public RouteFlow() {
-    	
     	dragController = new PickupDragController(containingPanel, false);
     	containingPanel.setPixelSize(600, 400);
     	setWidget(containingPanel);
 
+	    VerticalPanelDropController widgetDropController = new VerticalPanelDropController(dragElements);
+	    dragController.registerDropController(widgetDropController);
+	    containingPanel.add(dragElements, 200, 20);
+    	
     	Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "0" , "移除" );
     	containingPanel.add(trashBin2);
     	BinDropController trashDropController = new BinDropController(trashBin2);
         dragController.registerDropController(trashDropController);
-
-	    VerticalPanelDropController widgetDropController = new VerticalPanelDropController(dragElements);
-	    dragController.registerDropController(widgetDropController);
-	    containingPanel.add(dragElements, 200, 20);
     }
 
     public void initfriend(){
