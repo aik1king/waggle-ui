@@ -116,14 +116,14 @@ public class UserInfoViewController extends Composite {
 		/*
 		 * Display number of posts
 		 */
-		class PostsCallback extends Callback<JavaScriptObject> {
-			public void onSuccess ( JavaScriptObject response ) {
-				JSOModel model = response.cast ();
-				JsArray array = model.getArray("data");
-				outer.add ( new HTML ( "Posts " + array.length() ) );
-			}
-		}
-		fbCore.api ( "/f8/posts",  new PostsCallback () );
+//		class PostsCallback extends Callback<JavaScriptObject> {
+//			public void onSuccess ( JavaScriptObject response ) {
+//				JSOModel model = response.cast ();
+//				JsArray array = model.getArray("data");
+//				outer.add ( new HTML ( "Posts " + array.length() ) );
+//			}
+//		}
+//		fbCore.api ( "/f8/posts",  new PostsCallback () );
 		//這個只是顯示,目前使用者已經POST出去數目
 		
 		fbCore.api ( "/me/friends", new FacebookCallback ( "/me/friends", Ui.INPUT, null ) );
@@ -154,9 +154,9 @@ public class UserInfoViewController extends Composite {
 		fd.updated_time = jso.get ( "updated_time" );
 		Waggle_ui.username = fd;
 		
-		HTML json = new HTML ( new JSONObject ( response ).toString() );
-		json.addStyleName("jsonOutput");
-		outer.add ( json );
+		//HTML json = new HTML ( new JSONObject ( response ).toString() );
+		//json.addStyleName("jsonOutput");
+		//outer.add ( json );
 		
 		WUF.mPanel.rerefesh();
 	}
@@ -164,6 +164,7 @@ public class UserInfoViewController extends Composite {
 	/**
 	 * Render publish
 	 */
+/*	
 	public void testPublish () {
 	    JSONObject data = new JSONObject ();
 	    data.put( "method", new JSONString ( "stream.publish" ) );
@@ -183,6 +184,7 @@ public class UserInfoViewController extends Composite {
 	    data.put( "user_message_prompt", new JSONString ( "Share your thoughts about Connect and GWT" ) );
 	    fbCore.ui(data.getJavaScriptObject(), new Callback () );
 	}
+*/
 	
 	/**
 	 * Render share

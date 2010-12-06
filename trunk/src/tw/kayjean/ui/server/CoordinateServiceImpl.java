@@ -218,7 +218,17 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 				for (int i = 0; i < l.size(); i++) {
 					Node n = l.get(i);
 					if (n.geocell != null && n.geocell.startsWith(name)) {
-						// 準備加入,但最好可以簡化
+						// 準備加入
+
+/*						
+						if( n.type == 3){
+							//直接加進去
+						}
+						else{
+							//要有互斥運作
+						}
+*/						
+
 						// Collections.sort
 						for (int j = retNodes.size() - 1; j >= 0; j--) {
 							Node n2 = (Node) retNodes.get(j);
@@ -228,6 +238,8 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 								break;
 							}
 						}
+
+
 						retNodes.add(n);
 					}
 				}
@@ -238,30 +250,69 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	
 	public void readdatainsertintocache( String username ){
 		// 讀取區域檔案,存入cache
-		boolean awsexist = false;
-		S3Object objectComplete2 = null;
 		List<Node> l = MemCache.getcache(username);
-		XStream xstream = new XStream();
 		if (l == null) {
+			//我傳送給別人的項目
+			S3Object objectComplete = null;
+			boolean awsexist = false;
 			try {
-				objectComplete2 = s3Service
-						.getObject(testBucket2, username);
+				objectComplete = s3Service.getObject(testBucket2, username);
 				awsexist = true;
 			} catch (Exception e) {
 			}
 			if (awsexist == true) {
 				//舊使用者
 				try {
+					XStream xstream = new XStream();
 					l = (List<Node>) xstream.fromXML(ServiceUtils
-							.readInputStreamToString(objectComplete2
-									.getDataInputStream(), "UTF-8"));
-					MemCache.addcache(username, l);
+							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8"));
+					
 				} catch (Exception e) {
 					System.out.println(e);
 				}
 			}
-			else{
-				//新使用者
+			
+			//我設定為不想接觸的項目
+			awsexist = false;
+			try {
+				objectComplete = s3Service.getObject(testBucket2, username + "_s" );
+				awsexist = true;
+			} catch (Exception e) {
+			}
+			if (awsexist == true) {
+				//舊使用者
+				try {
+					XStream xstream = new XStream();
+					l.addAll( (List<Node>) xstream.fromXML(ServiceUtils
+							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8")) );
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+			
+			//別人傳送給我的項目
+			awsexist = false;
+			try {
+				objectComplete = s3Service.getObject(testBucket2, username + "_r" );
+				awsexist = true;
+			} catch (Exception e) {
+			}
+			if (awsexist == true) {
+				//舊使用者
+				try {
+					XStream xstream = new XStream();
+					l.addAll( (List<Node>) xstream.fromXML(ServiceUtils
+							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8")) );
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+			
+			if( l != null && l.size() > 0 ){
+				MemCache.addcache(username, l);
+			}
+			else
+			{
 				//就算沒有原本設定,還是要產生一個MemCache資料,避免之後每次都要讀取S3
 				ArrayList retNodes2 = new ArrayList();
 				MemCache.addcache(username, retNodes2);
@@ -273,7 +324,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		n.type = type;
 
 		// 1 我提供給別人
-		// 2 別人提供給我
+		// 2 TRASH
 		if (type == 1 || type == 2 ) {
 			// 寫入興趣點透過memorycache
 			readdatainsertintocache( username );

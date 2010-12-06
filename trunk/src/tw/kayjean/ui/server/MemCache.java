@@ -78,11 +78,7 @@ public class MemCache {
 				Map.Entry e = (Map.Entry)i.next();
 				String username = e.getKey().toString();
 				List<Node> d = ((CacheData)e.getValue()).getdata();
-				boolean needSave = ((CacheData)e.getValue()).needSave();
 				
-//				for (int j = 0; j < d.size(); j++) {
-//					System.out.println("Last Item : " + ((Node) d.get(j)).name);
-//				}
 
 				if( ((CacheData)e.getValue()).needDiscard() ){
 					System.out.println( username + "停留很久,沒有變動,準備刪除" );
@@ -90,27 +86,60 @@ public class MemCache {
 				}
 				else if( ((CacheData)e.getValue()).needSave() ){
 					System.out.println( username + "停留很久,有變動,準備儲存入檔案系統中並且刪除" );
-					String s = xstream.toXML(d);
-					S3Object stringObject = new S3Object(username, s);
-					if( testBucket2 == null ){
-						try {
-							AWSCredentials awsCredentials = new AWSCredentials("" , "");
-							s3Service = new RestS3Service(awsCredentials);
-							//儲存個人資料..這個方法怪怪的,不過暫時有效
-							testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
-						}
-						catch( Exception ee ){
-							System.out.println( ee.toString() );
-						}
+					
+					//type == 1的部份,進行存檔
+					ArrayList type1 = new ArrayList();
+					for (int j = 0 ; j < d.size(); j++) {
+						if( ((Node)d.get(j)).type == 1 )
+							type1.add( (Node)d.get(j) );
 					}
-					s3Service.putObject(testBucket2, stringObject);
-
+					if( type1.size() > 0 ){
+						String s = xstream.toXML(type1);
+						S3Object stringObject = new S3Object(username, s);
+						if( testBucket2 == null ){
+							try {
+								AWSCredentials awsCredentials = new AWSCredentials("" , "");
+								s3Service = new RestS3Service(awsCredentials);
+								//儲存個人資料..這個方法怪怪的,不過暫時有效
+								testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
+							}
+							catch( Exception ee ){
+								System.out.println( ee.toString() );
+							}
+						}
+						s3Service.putObject(testBucket2, stringObject);
+					}
+					
 					//提供給別人項目,用queue形式,某個人一整批存入同一個人,因為可以存入很長資料
 					if( qs == null ){
 						qs = new QueueService( "" , "" );
 					}
 					MessageQueue msgQueue = qs.getOrCreateMessageQueue("serviceid2friends");
 					String msgId = msgQueue.sendMessage(username);
+
+					
+					//type == 2的部份,進行存檔
+					ArrayList type2 = new ArrayList();
+					for (int j = 0 ; j < d.size(); j++) {
+						if( ((Node)d.get(j)).type == 2 )
+							type2.add( (Node)d.get(j) );
+					}
+					if( type2.size() > 0 ){
+						String s = xstream.toXML(type2);
+						S3Object stringObject = new S3Object(username + "_s" , s);
+						if( testBucket2 == null ){
+							try {
+								AWSCredentials awsCredentials = new AWSCredentials("" , "");
+								s3Service = new RestS3Service(awsCredentials);
+								//儲存個人資料..這個方法怪怪的,不過暫時有效
+								testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
+							}
+							catch( Exception ee ){
+								System.out.println( ee.toString() );
+							}
+						}
+						s3Service.putObject(testBucket2, stringObject);
+					}
 					
 					//準備刪除掉這個項目
 					removesets.add(username);

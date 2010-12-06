@@ -41,7 +41,7 @@ public class LocationPanel extends Composite {
     }
     
     public void addLocation(final Node n ) {
-    	
+    	//從RPC直接CALL過來
     	//先進行確認,是否存在,不存在才要繼續
     	if( routeFlow.checkexist( n.name ) == false ){
             // We assume that we're really going to add a location now
@@ -55,21 +55,6 @@ public class LocationPanel extends Composite {
     	}
     }
     
-    /**
-     * Takes a location out of our structures, possibly triggering an
-     * auto-rerouting.
-     * @param loc String of location to remove.
-     */
-    public void removeLocation(final LocationEntry loc) {
-
-        /** Actually remove it, Scriptaculously! This actually doesn't work due to the fact that we're still using tables.
-        Effects.Effect("DropOut", loc, "{ sync:true, duration: 3.0 }").addEffectListener(
-                new Effects.EffectListenerAdapter() { 
-                    public void onAfterFinish(Effect sender) { 
-                        routeFlow.remove(loc); 
-                    } });           **/
-        routeFlow.remove(loc); // Just in case the above didn't finish.
-    }
 
     /**
      * Hides the route bar, which implicitly means that all locations are gone.
