@@ -16,25 +16,34 @@ public class RouteFlow extends Composite {
     PickupDragController dragController;
 
     //friends
-    private static final int COLUMNS = 4;
+    private static final int COLUMNS = 3;
     private static final int ROWS = 10;
-    private static final int IMAGE_HEIGHT = 58;
     private static final int IMAGE_WIDTH = 65;
+    private static final int IMAGE_HEIGHT = 80;
+
     
     AbsolutePanel containingPanel = new AbsolutePanel();
     private static boolean friends = false;
     
     public RouteFlow() {
     	dragController = new PickupDragController(containingPanel, false);
-    	containingPanel.setPixelSize(600, 400);
+    	containingPanel.setPixelSize(600, 600);
     	setWidget(containingPanel);
 
 	    VerticalPanelDropController widgetDropController = new VerticalPanelDropController(dragElements);
 	    dragController.registerDropController(widgetDropController);
-	    containingPanel.add(dragElements, 200, 20);
+	    //沒什麼用處 dragElements.setSize("100px", "300px");
+	    containingPanel.add(dragElements, 20, 20);
     	
-    	Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "0" , "移除" );
-    	containingPanel.add(trashBin2);
+	    //http://examples.roughian.com/index.htm#Panels~VerticalSplitPanel
+	    
+    	Bin trashBin3 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "1" , "想去" );
+    	containingPanel.add(trashBin3 , 380 , 20 );
+    	BinDropController trashDropController2 = new BinDropController(trashBin3);
+        dragController.registerDropController(trashDropController2);
+
+	    Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "0" , "移除" );
+    	containingPanel.add(trashBin2 , 420 , 20 );
     	BinDropController trashDropController = new BinDropController(trashBin2);
         dragController.registerDropController(trashDropController);
     }
@@ -64,7 +73,7 @@ public class RouteFlow extends Composite {
             count++;
           }
         }
-        containingPanel.add(flexTable);
+        containingPanel.add(flexTable , 380 , 50 );
         friends = true;
     	}
     }

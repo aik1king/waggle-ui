@@ -137,7 +137,7 @@ public class UserInfoViewController extends Composite {
 	 */
 	private void renderMe ( JavaScriptObject response ) {
 		JSOModel jso = response.cast();
-		welcomeHtml.setHTML ( "<h3> Hi,  " + jso.get ( "name" ) + "</h3> albumupload is a simple GWT Facebook Graph Client. "  );
+		welcomeHtml.setHTML ( "<h3> Hi,  " + jso.get ( "name" ) + "</h3>"  );
 		//setusername( jso.get ( "name" ) );
 		
 		FBDetail fd = new FBDetail();
@@ -159,6 +159,7 @@ public class UserInfoViewController extends Composite {
 		//outer.add ( json );
 		
 		WUF.mPanel.rerefesh();
+		WUF.chooseTab(0);
 	}
 	
 	/**
@@ -267,6 +268,13 @@ public class UserInfoViewController extends Composite {
             ff.name = j.get("name");
             ffs.items.add(ff);
         }
+        
+        //自己要加入自己這個朋友
+        FBFriend ff2 = new FBFriend();
+        ff2.id = Waggle_ui.username.id;
+        ff2.name = Waggle_ui.username.name;
+        ffs.items.add(ff2);
+        
 		Waggle_ui.friends = ffs;
 
 /*		

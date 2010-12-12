@@ -220,27 +220,35 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 					if (n.geocell != null && n.geocell.startsWith(name)) {
 						// 準備加入
 
-/*						
 						if( n.type == 3){
 							//直接加進去
+							for (int j = retNodes.size() - 1; j >= 0; j--) {
+								Node n2 = (Node) retNodes.get(j);
+								if (n2.name.equalsIgnoreCase(n.name)) {
+									//而且如果retNodes有
+									//retNodes的分數要增加
+									n2.rank = n2.rank*100;
+									retNodes.remove(j);
+									retNodes.add(n2);
+									break;
+								}
+							}
+							retNodes.add(n);
 						}
-						else{
+						else if( n.type == 1 || n.type == 2 || n.type == 4 ){
 							//要有互斥運作
-						}
-*/						
-
-						// Collections.sort
-						for (int j = retNodes.size() - 1; j >= 0; j--) {
-							Node n2 = (Node) retNodes.get(j);
-							if (n2.name.equalsIgnoreCase(n.name)) {
-								// 移除地圖,保留個人設定
-								retNodes.remove(j);
-								break;
+							for (int j = retNodes.size() - 1; j >= 0; j--) {
+								Node n2 = (Node) retNodes.get(j);
+								if (n2.name.equalsIgnoreCase(n.name)) {
+									// 移除地圖,保留個人設定
+									retNodes.remove(j);
+									break;
+								}
 							}
 						}
-
-
-						retNodes.add(n);
+						else{
+							//不太可能到這裡
+						}
 					}
 				}
 			}
@@ -276,6 +284,25 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			awsexist = false;
 			try {
 				objectComplete = s3Service.getObject(testBucket2, username + "_s" );
+				awsexist = true;
+			} catch (Exception e) {
+			}
+			if (awsexist == true) {
+				//舊使用者
+				try {
+					XStream xstream = new XStream();
+					l.addAll( (List<Node>) xstream.fromXML(ServiceUtils
+							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8")) );
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+
+			
+			//我設定為未來想去的項目
+			awsexist = false;
+			try {
+				objectComplete = s3Service.getObject(testBucket2, username + "_w" );
 				awsexist = true;
 			} catch (Exception e) {
 			}
