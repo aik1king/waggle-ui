@@ -31,13 +31,13 @@ public class CacheData {
 	}
 
 	public boolean needSave(){
-		if( UnChangeCount > 3 && IsChange == true && data.size() > 0 )
+		if( UnChangeCount > 2 && IsChange == true && data.size() > 0 )
 			return true;
 		return false;
 	}
 
 	public boolean needDiscard(){
-		if( UnChangeCount > 3 && IsChange == false )
+		if( UnChangeCount > 2 && IsChange == false )
 			return true;
 		return false;
 	}

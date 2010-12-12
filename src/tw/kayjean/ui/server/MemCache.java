@@ -117,7 +117,7 @@ public class MemCache {
 					MessageQueue msgQueue = qs.getOrCreateMessageQueue("serviceid2friends");
 					String msgId = msgQueue.sendMessage(username);
 
-					
+/*					
 					//type == 2的部份,進行存檔
 					ArrayList type2 = new ArrayList();
 					for (int j = 0 ; j < d.size(); j++) {
@@ -140,6 +140,31 @@ public class MemCache {
 						}
 						s3Service.putObject(testBucket2, stringObject);
 					}
+*/
+					
+					//type == 4的部份,進行存檔
+					ArrayList type4 = new ArrayList();
+					for (int j = 0 ; j < d.size(); j++) {
+						if( ((Node)d.get(j)).type == 2 )
+							type4.add( (Node)d.get(j) );
+					}
+					if( type4.size() > 0 ){
+						String s = xstream.toXML(type4);
+						S3Object stringObject = new S3Object(username + "_w" , s);
+						if( testBucket2 == null ){
+							try {
+								AWSCredentials awsCredentials = new AWSCredentials("" , "");
+								s3Service = new RestS3Service(awsCredentials);
+								//儲存個人資料..這個方法怪怪的,不過暫時有效
+								testBucket2 = s3Service.getOrCreateBucket("xmlservertemp-kayjean");
+							}
+							catch( Exception ee ){
+								System.out.println( ee.toString() );
+							}
+						}
+						s3Service.putObject(testBucket2, stringObject);
+					}
+
 					
 					//準備刪除掉這個項目
 					removesets.add(username);

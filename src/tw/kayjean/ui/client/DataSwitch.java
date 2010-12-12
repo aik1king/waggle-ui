@@ -180,7 +180,7 @@ public class DataSwitch implements CoordinateServiceAsync {
         				}
         			}
         		}
-            	cache.put(QueryKey, result);            	
+            	cache.put(QueryKey, result);
               cb.onSuccess(result);
             }
       }

@@ -37,6 +37,9 @@ class Bin extends HTML {
 		    if( id.equalsIgnoreCase("0") )
 		    	// trash can
 		    	DataSwitch.get().sendNode( Waggle_ui.username.id , 2 , placename , new CoordinateSendCallback() );
+		    else if( id.equalsIgnoreCase("1") )
+		    	// wishlist
+		    	DataSwitch.get().sendNode( Waggle_ui.username.id , 4 , placename , new CoordinateSendCallback() );
 		    else
 		    	DataSwitch.get().sendNode( Waggle_ui.username.id , 1 , placename , new CoordinateSendCallback() );
 	}
@@ -64,8 +67,10 @@ class Bin extends HTML {
 		    //setHTML("<b>" + name + "</b><br>\n" + "(" + text + ")<br>\n<br>\n" + "<i>try dropping someitems on me</i>");
 		    if( id.equalsIgnoreCase("0") )
 		    	setHTML( name + " items " + count );
+		    else if( id.equalsIgnoreCase("1") )
+		    	setHTML( name + " items " + count );
 		    else
-		    	setHTML( " <img src=\"http://graph.facebook.com/" + id + "/picture\" >" + name + " items " + count );
+		    	setHTML( "<img src=\"http://graph.facebook.com/" + id + "/picture\" ><br>" + name + "<br>items " + count );
 		  }
 	}
 
