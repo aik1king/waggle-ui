@@ -11,8 +11,8 @@ import tw.kayjean.ui.client.model.FBFriends;
 public interface CoordinateServiceAsync {
 	public void getNode(String s, AsyncCallback callback);
 	public void getIPLocation(AsyncCallback callback);
-	public void getRTree ( String username , String name , AsyncCallback callback);
-	public void sendNode ( String username , int type , Node nd , AsyncCallback callback );
+	public void getRTree ( String username , String name , int type , AsyncCallback callback);
+	public void sendNode ( Node nd , AsyncCallback callback );
 	public void sendDetail ( FBDetail fd , FBFriends ffs , AsyncCallback callback );
 //	public void getLocations(String prefix, int limit,AsyncCallback callback);
 }

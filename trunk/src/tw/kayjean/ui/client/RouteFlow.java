@@ -18,8 +18,8 @@ public class RouteFlow extends Composite {
     //friends
     private static final int COLUMNS = 3;
     private static final int ROWS = 10;
-    private static final int IMAGE_WIDTH = 65;
-    private static final int IMAGE_HEIGHT = 80;
+    private static final int IMAGE_WIDTH = 70;
+    private static final int IMAGE_HEIGHT = 85;
 
     
     AbsolutePanel containingPanel = new AbsolutePanel();
@@ -37,20 +37,30 @@ public class RouteFlow extends Composite {
     	
 	    //http://examples.roughian.com/index.htm#Panels~VerticalSplitPanel
 	    
-    	Bin trashBin3 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "1" , "想去" );
-    	containingPanel.add(trashBin3 , 380 , 20 );
-    	BinDropController trashDropController2 = new BinDropController(trashBin3);
-        dragController.registerDropController(trashDropController2);
-
-	    Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , "0" , "移除" );
-    	containingPanel.add(trashBin2 , 420 , 20 );
-    	BinDropController trashDropController = new BinDropController(trashBin2);
-        dragController.registerDropController(trashDropController);
     }
 
     public void initfriend(){
         //friends
     	if( friends == false ){
+
+    	//myself
+    	Bin trashBin2 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.myself );
+    	containingPanel.add(trashBin2 , 360 , 20 );
+    	BinDropController trashDropController2 = new BinDropController(trashBin2);
+        dragController.registerDropController(trashDropController2);
+
+        //trash
+	    Bin trashBin3 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.trash );
+    	containingPanel.add(trashBin3 , 420 , 20 );
+    	BinDropController trashDropController3 = new BinDropController(trashBin3);
+        dragController.registerDropController(trashDropController3);
+
+        //wish
+	    Bin trashBin4 = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.wish );
+    	containingPanel.add(trashBin4 , 480 , 20 );
+    	BinDropController trashDropController4 = new BinDropController(trashBin4);
+        dragController.registerDropController(trashDropController4);
+        
         FlexTable flexTable = new FlexTable();
         // create our grid
         int totalcount = 0;
@@ -59,13 +69,14 @@ public class RouteFlow extends Composite {
         int count = 0;
         for (int i = 0; i < COLUMNS && count < totalcount ; i++) {
           for (int j = 0; j < ROWS && count < totalcount ; j++) {
+        	  
             // create a simple panel drop target for the current cell
             SimplePanel simplePanel = new SimplePanel();
             simplePanel.setPixelSize(IMAGE_WIDTH, IMAGE_HEIGHT);
             flexTable.setWidget(i, j, simplePanel);
             //flexTable.getCellFormatter().setStyleName(i, j, CSS_DEMO_PUZZLE_CELL);
 
-            Bin friendBin = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.items.get(count).id , Waggle_ui.friends.items.get(count).name );
+            Bin friendBin = new Bin(IMAGE_WIDTH, IMAGE_HEIGHT , Waggle_ui.friends.items.get(count) );
             simplePanel.setWidget( friendBin );
             BinDropController openTrashBinDropController = new BinDropController(friendBin);
             dragController.registerDropController(openTrashBinDropController);
@@ -73,7 +84,7 @@ public class RouteFlow extends Composite {
             count++;
           }
         }
-        containingPanel.add(flexTable , 380 , 50 );
+        containingPanel.add(flexTable , 380 , 60 );
         friends = true;
     	}
     }

@@ -117,14 +117,17 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	// 1.找出並且列出所有地方
 	// 2.使用者可以用不同ranking紀錄曾經去過的項目
 	// 3.推薦可以去的地方(包括顯示詳細資料)
-	public List getRTree(String username, String name) {
+	public List getRTree(String username, String name , int type ) {
 		System.out.println("CoordinateServiceImpl getRTree " + username
-				+ " and " + name);
+				+ " and " + name + " and " + type );
 		ArrayList retNodes = new ArrayList();
 		XStream xstream = new XStream();
 		boolean awsexist = false;
 		S3Object objectComplete2 = null;
 
+		if( type == 0 ){
+		
+		
 		// 基本地圖功能
 		try {
 			objectComplete2 = s3Service.getObject(testBucket1, name);
@@ -206,6 +209,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 				System.out.println(e);
 			}
 		}
+		}
 
 		// 讀取client相關資料
 		if (username != null && !username.equalsIgnoreCase("")) {
@@ -219,35 +223,23 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 					Node n = l.get(i);
 					if (n.geocell != null && n.geocell.startsWith(name)) {
 						// 準備加入
-
-						if( n.type == 3){
-							//直接加進去
-							for (int j = retNodes.size() - 1; j >= 0; j--) {
-								Node n2 = (Node) retNodes.get(j);
-								if (n2.name.equalsIgnoreCase(n.name)) {
-									//而且如果retNodes有
-									//retNodes的分數要增加
-									n2.rank = n2.rank*100;
-									retNodes.remove(j);
-									retNodes.add(n2);
-									break;
+						if( type == 0 ){
+							//我開頭的全部刪除
+							if( n.fid.equalsIgnoreCase(username) ){
+								//要有互斥運作
+								for (int j = retNodes.size() - 1; j >= 0; j--) {
+									Node n2 = (Node) retNodes.get(j);
+									if (n2.name.equalsIgnoreCase(n.name)) {
+										// 移除地圖,保留個人設定
+										retNodes.remove(j);
+										break;
+									}
 								}
 							}
+						}
+						if( type == 1 ){
+							//我結尾的全部加入
 							retNodes.add(n);
-						}
-						else if( n.type == 1 || n.type == 2 || n.type == 4 ){
-							//要有互斥運作
-							for (int j = retNodes.size() - 1; j >= 0; j--) {
-								Node n2 = (Node) retNodes.get(j);
-								if (n2.name.equalsIgnoreCase(n.name)) {
-									// 移除地圖,保留個人設定
-									retNodes.remove(j);
-									break;
-								}
-							}
-						}
-						else{
-							//不太可能到這裡
 						}
 					}
 				}
@@ -275,43 +267,6 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 					l = (List<Node>) xstream.fromXML(ServiceUtils
 							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8"));
 					
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-			}
-			
-			//我設定為不想接觸的項目
-			awsexist = false;
-			try {
-				objectComplete = s3Service.getObject(testBucket2, username + "_s" );
-				awsexist = true;
-			} catch (Exception e) {
-			}
-			if (awsexist == true) {
-				//舊使用者
-				try {
-					XStream xstream = new XStream();
-					l.addAll( (List<Node>) xstream.fromXML(ServiceUtils
-							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8")) );
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-			}
-
-			
-			//我設定為未來想去的項目
-			awsexist = false;
-			try {
-				objectComplete = s3Service.getObject(testBucket2, username + "_w" );
-				awsexist = true;
-			} catch (Exception e) {
-			}
-			if (awsexist == true) {
-				//舊使用者
-				try {
-					XStream xstream = new XStream();
-					l.addAll( (List<Node>) xstream.fromXML(ServiceUtils
-							.readInputStreamToString(objectComplete.getDataInputStream(), "UTF-8")) );
 				} catch (Exception e) {
 					System.out.println(e);
 				}
@@ -347,16 +302,10 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		}
 	}
 
-	public Integer sendNode(String username, int type, Node n) {
-		n.type = type;
-
-		// 1 我提供給別人
-		// 2 TRASH
-		if (type == 1 || type == 2 ) {
-			// 寫入興趣點透過memorycache
-			readdatainsertintocache( username );
-			MemCache.addcacheitem(username, n);
-		}
+	public Integer sendNode(Node n) {
+		// 寫入興趣點透過memorycache
+		readdatainsertintocache( n.fid );
+		MemCache.addcacheitem( n.fid , n);
 		return 1;
 	}
 
@@ -386,7 +335,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 	}
 	
 	
-	public List sendDetail(FBDetail fd , FBFriends ffs) {
+	public FBFriends sendDetail(FBDetail fd , FBFriends ffs) {
 		boolean awsexist = false;
 
 		//id_d
@@ -433,6 +382,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 		//id_f
 		S3Object A_f_S3Object = null;
 		awsexist = false;
+		FBFriends A_f = null;
 		try {
 			A_f_S3Object = s3Service
 					.getObject(testBucket2, fd.id + "_f" );
@@ -443,7 +393,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			//舊使用者,讀入資料,更新
 			try {
 				XStream A_f_xstream = new XStream();
-				FBFriends A_f = (FBFriends) A_f_xstream
+				A_f = (FBFriends) A_f_xstream
 					.fromXML(ServiceUtils.readInputStreamToString(
 							A_f_S3Object.getDataInputStream(), "UTF-8"));
 				if( A_f.items.size() < ffs.items.size() ){
@@ -515,7 +465,7 @@ public class CoordinateServiceImpl extends RemoteServiceServlet implements Coord
 			}
 		}
 		
-		return null;
+		return A_f;
 	}
 	
 	static double ip2number(String ip) {
