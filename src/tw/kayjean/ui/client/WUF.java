@@ -26,7 +26,7 @@ public class WUF extends Composite{
 	public static final TabPanel tPanel = new TabPanel();
 	public static final LocationPanel locPanel = new LocationPanel();
 	public static final FavoritePanel favPanel = new FavoritePanel();
-	public static final ReferencePanel refPanel = new ReferencePanel();
+//	public static final ReferencePanel refPanel = new ReferencePanel();
 	public static final MapPanel mPanel = new MapPanel();
 	
 	//private static final Label userName = new Label( "guest" );
@@ -46,7 +46,7 @@ public class WUF extends Composite{
 		// List of locations to plot, and a plot button
         tPanel.add(locPanel, "<div id=\"tab_dispatch\" class=\"one_dispatch\"><span>分送景點</span></div>", true); 
         tPanel.add(favPanel, "<div id=\"tab_mine\" class=\"one_mine\"><span>專長</span></div>", true);
-        tPanel.add(refPanel, "<div id=\"tab_mine\" class=\"one_mine\"><span>地圖</span></div>", true);
+//        tPanel.add(refPanel, "<div id=\"tab_mine\" class=\"one_mine\"><span>地圖</span></div>", true);
         tPanel.addTabListener(new TabClickListener());
         outer.add(tPanel);
         

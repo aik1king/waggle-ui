@@ -129,6 +129,8 @@ public class Waggle_ui implements EntryPoint, ValueChangeHandler<String>  {
 	 */
 	private void renderWhenLoggedIn () {
 		mainView.clear();
+		mainView.add( new WUF() );
+		
 		mainView.add( new UserInfoViewController ( fbCore ) );
 		//目前被修改成
 		//要達到目標是,顯示地圖項目,可以開始運作了
@@ -137,7 +139,6 @@ public class Waggle_ui implements EntryPoint, ValueChangeHandler<String>  {
 //		WUF.test2( new UserInfoViewController ( fbCore ) );
 		fbXfbml.parse();
 //		mainView.setWidget ( new WUF() );
-		mainView.add( new WUF() );
 	}
 	
 	/**

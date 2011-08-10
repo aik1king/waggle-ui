@@ -2,6 +2,9 @@ package tw.kayjean.ui.client;
 
 //http://examples.roughian.com/index.htm#Widgets~MenuBar
 
+//import kayjean.client.ReferenceMap;
+//import kayjean.client.RegionWidget;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -20,6 +23,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import tw.kayjean.ui.client.model.Node;
 
 public class ReferencePanel extends Composite {
+/*	
 	ReferenceMap refMap;
 	TextBox centerLat = new TextBox();
 	TextBox centerLon = new TextBox();
@@ -92,4 +96,5 @@ public class ReferencePanel extends Composite {
         routeTab.add(refMap);
 		initWidget(routeTab);
 	}
+*/	
 }

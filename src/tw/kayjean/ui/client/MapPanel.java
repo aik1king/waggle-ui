@@ -164,7 +164,7 @@ public class MapPanel extends Composite {
 			else if( WUF.currentselect == 1 )
 				WUF.favPanel.checkpointinbox();
 			//先塞入原本cachetable項目
-			DataSwitch.get().getRTree( "" , "cache" , new CoordinateRTreeCallback());
+			DataSwitch.get().getRTree( "" , "cache" , WUF.currentselect , new CoordinateRTreeCallback());
 
 			//放入這個格子內原本安排項目
 			List<String> r = null;
@@ -172,7 +172,7 @@ public class MapPanel extends Composite {
 			r = eee.best_bbox_search_cells(n, ee , s, w);
 			for (int i = 0; i < r.size(); i++) {
 				//每一個方格進行處理
-				DataSwitch.get().getRTree( Waggle_ui.username.id , r.get(i) , new CoordinateRTreeCallback());
+				DataSwitch.get().getRTree( Waggle_ui.username.id , r.get(i) , WUF.currentselect , new CoordinateRTreeCallback());
 			}
 
 		} else

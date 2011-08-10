@@ -109,6 +109,8 @@ public class UserInfoViewController extends Composite {
 		class MeCallback extends Callback<JavaScriptObject> {
 			public void onSuccess ( JavaScriptObject response ) {
 				renderMe ( response );
+				fbCore.api ( "/me/friends", new FacebookCallback ( "/me/friends", Ui.INPUT, null ) );
+				
 			}
 		}
 		fbCore.api ( "/me" , new MeCallback () );
@@ -126,7 +128,6 @@ public class UserInfoViewController extends Composite {
 //		fbCore.api ( "/f8/posts",  new PostsCallback () );
 		//這個只是顯示,目前使用者已經POST出去數目
 		
-		fbCore.api ( "/me/friends", new FacebookCallback ( "/me/friends", Ui.INPUT, null ) );
 		
 		outer.add ( content );
 		initWidget ( outer );
@@ -273,7 +274,19 @@ public class UserInfoViewController extends Composite {
         FBFriend ff2 = new FBFriend();
         ff2.id = Waggle_ui.username.id;
         ff2.name = Waggle_ui.username.name;
-        ffs.items.add(ff2);
+        ffs.myself = ff2;
+
+        //自己要加入自己垃圾桶
+        FBFriend ff3 = new FBFriend();
+        ff3.id = Waggle_ui.username.id + "_trash";
+        ff3.name = "垃圾桶";
+        ffs.trash = ff3;
+
+        //自己要加入自己口袋名單
+        FBFriend ff4 = new FBFriend();
+        ff4.id = Waggle_ui.username.id + "_wish";
+        ff4.name = "口袋名單";
+        ffs.wish = ff4;
         
 		Waggle_ui.friends = ffs;
 
@@ -311,6 +324,14 @@ public class UserInfoViewController extends Composite {
     		}
 
     		public void onSuccess(final Object result ) {
+    			//更新資料,從遠方拿到內容
+    			FBFriends ret = (FBFriends) result;
+    			if ( ret == null) {
+    				
+    			}
+    			else{
+    				Waggle_ui.friends = ret;
+    			}
     			WUF.locPanel.routeFlow.initfriend();
 /*先不處理
     			Poi poidata = (Poi) result;
